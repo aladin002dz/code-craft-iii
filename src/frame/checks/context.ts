@@ -71,7 +71,14 @@ export function createCheckContext(container: HTMLElement, pendingError: () => s
         }) ?? null
       )
     },
-    labelled: name => findAll('[aria-label]').find(el => matches(clean(el.getAttribute('aria-label')), name)) ?? null,
+    labelled: name => {
+      const elements = findAll('[aria-label]')
+      if (typeof name === 'string') {
+        const exact = elements.find(el => clean(el.getAttribute('aria-label')).toLowerCase() === name.toLowerCase())
+        if (exact) return exact
+      }
+      return elements.find(el => matches(clean(el.getAttribute('aria-label')), name)) ?? null
+    },
     text: element => clean(element?.textContent),
     async settle() {
       await new Promise(resolve => setTimeout(resolve, 30))

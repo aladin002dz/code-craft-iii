@@ -19,7 +19,7 @@ export const lesson6: Lesson = {
   objectives: [
     { id: 'adds-task', label: 'Add puts a new task at the end and clears the field' },
     { id: 'removes-task', label: '× removes only that task' },
-    { id: 'reorders-tasks', label: 'The arrow buttons and drag and drop reorder the list' },
+    { id: 'reorders-tasks', label: 'The move buttons reorder the list without losing a task' },
   ],
   hints: [
     'push, splice and assigning to an index all change the array that React is already holding. What creates a new array instead?',

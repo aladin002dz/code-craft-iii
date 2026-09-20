@@ -206,6 +206,7 @@ select {
   color: #8896ad;
   cursor: grab;
   user-select: none;
+  touch-action: none;
 }
 
 .actions input {

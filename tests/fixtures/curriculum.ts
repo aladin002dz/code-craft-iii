@@ -1,0 +1,40 @@
+function replace(source: string, find: string, value: string): string {
+  if (!source.includes(find)) throw new Error(`Starter no longer contains: ${find}`)
+  return source.replace(find, value)
+}
+
+export const solutions: Record<number, (starter: string) => string> = {
+  1: code => replace(code, '// TODO: switch the theme when the button is clicked.', 'setIsDark(previous => !previous);'),
+  2: code => replace(replace(replace(code,
+    'const quantity = 1;', 'const [quantity, setQuantity] = useState(1);'),
+    '// TODO 2: add one to the quantity.', 'setQuantity(previous => previous + 1);'),
+    '// TODO 3: remove one, but never go below 0.', 'setQuantity(previous => Math.max(0, previous - 1));'),
+  3: code => replace(code, 'setQuantity(quantity + 1);', 'setQuantity(previous => previous + 1);'),
+  4: code => replace(replace(replace(code,
+    '<output aria-label="Quantity">0</output>', '<output aria-label="Quantity">{quantity}</output>'),
+    '<button onClick={() => {}}>Add one</button>', '<button onClick={onAdd}>Add one</button>'),
+    '<CartItem />', '<CartItem name="Desk lamp" quantity={quantity} onAdd={addOne} />'),
+  5: code => replace(replace(replace(code,
+    '  const [numberValue, setNumberValue] = useState(40);\n', ''),
+    'value={numberValue}', 'value={sliderValue}'),
+    'setNumberValue(Number(event.target.value))', 'setSliderValue(Number(event.target.value))'),
+  6: code => replace(replace(replace(code,
+    '// TODO 1: add { id: String(Date.now()), title: draft } by building a new array.',
+    "setTasks(previous => [...previous, { id: String(Date.now()), title: draft }]);"),
+    '// TODO 2: keep every task except the one with this id.',
+    'setTasks(previous => previous.filter(task => task.id !== id));'),
+    '// TODO 3: build a reordered copy of tasks (never change the original), then update state.',
+    'setTasks(previous => { const next = [...previous]; const [item] = next.splice(from, 1); next.splice(to, 0, item); return next; });'),
+  7: code => replace(replace(replace(replace(replace(replace(code,
+    'function SearchBox() {\n  const [query, setQuery] = useState(\'\');',
+    'function SearchBox({ query, setQuery }) {'),
+    'function TaskList() {', 'function TaskList({ query }) {'),
+    'allTasks.map(task => (', 'allTasks.filter(task => task.toLowerCase().includes(query.toLowerCase())).map(task => ('),
+    'export default function SearchBoard() {', "export default function SearchBoard() {\n  const [query, setQuery] = useState('');"),
+    '<SearchBox />', '<SearchBox query={query} setQuery={setQuery} />'),
+    '<TaskList />', '<TaskList query={query} />'),
+  8: code => replace(code, '  const [subtotal, setSubtotal] = useState(50);', '  const subtotal = quantity * unitPrice;'),
+  9: code => replace(replace(code,
+    '<TaskRow key={index} task={task} />', '<TaskRow key={task.id} task={task} />'),
+    '<CommentForm person={person} />', '<CommentForm key={person.id} person={person} />'),
+}

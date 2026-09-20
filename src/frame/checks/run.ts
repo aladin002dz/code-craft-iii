@@ -25,12 +25,15 @@ export async function runChecks(defs: CheckDef[], mounted: Mounted, container: H
       results.push({ id: def.id, passed: true, message: null })
     } catch (error) {
       // A render or event error explains more than the "element not found" it causes.
-      const message =
+      let message =
         runtimeErrors.length > 0
           ? `Your code threw an error: ${runtimeErrors[0]}`
           : error instanceof CheckFailure
             ? error.message
             : `This check could not finish: ${error instanceof Error ? error.message : String(error)}`
+      if (/not extensible|read.only|cannot assign to read.only|object is not extensible/i.test(message)) {
+        message += ' This usually means state was changed in place. Make a new object or array before calling the setter.'
+      }
       results.push({ id: def.id, passed: false, message })
     }
   }

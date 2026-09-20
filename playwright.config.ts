@@ -3,7 +3,7 @@ import { defineConfig } from '@playwright/test'
 // End-to-end tests run against the production build served under a GitHub Pages–style
 // base path, so they also prove asset paths and direct hash links work when deployed.
 const PORT = 4173
-const BASE_PATH = 'state-quest'
+const BASE_PATH = 'code-craft-iii'
 
 export default defineConfig({
   testDir: 'tests/e2e',

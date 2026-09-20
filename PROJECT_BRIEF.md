@@ -6,7 +6,7 @@ Build a browser game that teaches React state through practical application feat
 
 State Quest is the working name. The user prefers the latest code-editor-and-preview design concept. Earlier fantasy islands, mascots, and lamp-room concepts were rejected as too childish and too far from real projects.
 
-This brief records the design review and instructions for the future implementation. The application has not been implemented yet. Generated mockups are visual references, not specifications for exact code, copy, lesson titles, or completion states; some details in them were inconsistent.
+This brief records the design review and implementation direction. The application now has a working editor, sandboxed preview, state inspector, behavior checks, and nine lesson definitions. Generated mockups are visual references, not specifications for exact code, copy, lesson titles, or completion states; some details in them were inconsistent.
 
 The latest proposed lesson-screen mockup is [docs/design/state-quest-lesson-1-mockup.png](docs/design/state-quest-lesson-1-mockup.png). It depicts the completed state of Lesson 1 to show how code, preview, inspector, checks, and progression align; the real exercise must begin in an incomplete state.
 
@@ -93,7 +93,7 @@ Drag-and-drop activities must have a keyboard or button alternative. Use them fo
 - TanStack Router with hash history for shareable lesson links that work on GitHub Pages without server rewrites.
 - CSS and SVG for the professional interface and simple visualizations.
 - Motion for useful state and layout animations.
-- `@dnd-kit/react` for drag-and-drop activities where needed; verify the current API before implementing.
+- Pointer-based task dragging inside the sandboxed preview, with move buttons for keyboard access. The gesture wiring is supplied in the starter; the learner implements the immutable reorder function it calls. This avoids native HTML drag behavior across the sandbox boundary.
 - React state for local UI and reducers/context where shared application state justifies them.
 - Browser local storage for versioned progress, preferences, and drafts. Recover gracefully from missing, invalid, or unavailable storage.
 - npm and a committed lockfile for reproducible installs.
@@ -102,7 +102,7 @@ GitHub Pages is the hosting target. Configure Vite's asset base for the actual r
 
 ### Code execution and editor
 
-Sandpack is the initial candidate for an embedded React editor and runtime. Confirm its current behavior and compatibility in a small working prototype before committing to the integration. Record the final choice here.
+The editor uses CodeMirror. Sucrase compiles the learner's displayed JSX; the result runs in a sandboxed, opaque-origin iframe with an inlined React runtime. This self-hosted choice replaced the proposed Sandpack integration without a Sandpack prototype. The iframe makes no subresource requests; the app's assets are served from its own GitHub Pages origin. A small loop guard bounds synchronous loops in learner code so a runaway render can report an error and recover. The host reads committed React state through a minimal devtools hook in the frame, and behavior checks run against a separate frame executing the same learner code.
 
 The editor/runtime decision must satisfy these requirements:
 

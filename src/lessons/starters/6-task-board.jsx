@@ -39,15 +39,17 @@ export default function TaskBoard() {
         {tasks.map((task, index) => (
           <li
             key={task.id}
-            draggable
-            onDragStart={event => event.dataTransfer.setData('text/plain', String(index))}
-            onDragOver={event => event.preventDefault()}
-            onDrop={event => {
-              event.preventDefault();
-              moveTask(Number(event.dataTransfer.getData('text/plain')), index);
-            }}
+            data-task-index={index}
           >
-            <span className="drag-handle" aria-hidden="true">⋮⋮</span>
+            <span
+              className="drag-handle"
+              aria-hidden="true"
+              onPointerDown={event => event.currentTarget.setPointerCapture(event.pointerId)}
+              onPointerUp={event => {
+                const target = document.elementFromPoint(event.clientX, event.clientY)?.closest('[data-task-index]');
+                if (target) moveTask(index, Number(target.getAttribute('data-task-index')));
+              }}
+            >⋮⋮</span>
             <span className="title">{task.title}</span>
             <button className="icon-button" aria-label={`Move ${task.title} up`} onClick={() => moveTask(index, index - 1)}>↑</button>
             <button className="icon-button" aria-label={`Move ${task.title} down`} onClick={() => moveTask(index, index + 1)}>↓</button>
