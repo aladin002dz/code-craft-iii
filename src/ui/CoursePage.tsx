@@ -20,8 +20,7 @@ export function CoursePage() {
           Your progress and drafts stay in this browser.
         </p>
         <div className="intro-actions">
-          <Link className="btn primary" to="/introduction">Start with Lesson 0: What is state?</Link>
-          <Link className="btn" to="/handbook"><BookIcon /> State handbook</Link>
+          <Link className="btn" to="/handbook"><BookIcon /> Handbook</Link>
         </div>
         {finished ? (
           <p className="course-done" role="status">

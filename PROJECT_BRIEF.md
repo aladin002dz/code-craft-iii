@@ -172,8 +172,8 @@ The first lesson is ready when:
 
 Before considering the full game complete, apply equivalent acceptance checks to all nine lessons and verify the journey from first lesson to completion. Report what was implemented, what was verified, and any remaining limitations accurately.
 
-## Agreed introduction and handbook
+## Agreed handbook
 
-Add an optional Lesson 0, “What is state?”, before the nine exercises. It takes about 3–5 minutes and requires no coding. Learners try a shopping-cart count, learn that state is component memory, connect a setter to a new render, read the three parts of `useState`, and predict the result of adding one to a count of two. Explain render snapshots accurately. The displayed read-only example executes in the existing sandbox and the inspector observes its actual React state.
+Merge Lesson 0 and the handbook into one page titled Handbook at /handbook. Remove Lesson 0 from visible navigation; redirect legacy /introduction links to the handbook. Preserve all nine exercises, completion totals, drafts, and prerequisites.
 
-The handbook shares the same basics explanation for later reference and is accessible from the course and workspace header. Lesson 0 uses `/introduction` and the handbook uses `/handbook` with the existing hash routing for GitHub Pages. The introduction is freely revisitable and does not change the nine exercises, their completion totals, saved drafts, or prerequisites.
+Improve the merged resource with a restrained editorial layout, numbered sections, clear code and definition panels, and responsive preview panels. Retain the no-coding introduction, component memory, useState explanation, accurate snapshots, executable cart with actual state inspection and reset, and prediction feedback. Add expandable reference notes on queued updates, shared state and props, immutable updates, derived state, and component identity. Exercise screens are outside this visual refresh.

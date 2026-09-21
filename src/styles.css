@@ -1325,3 +1325,39 @@ a.lesson-card:hover {
   .intro-example { grid-template-columns: 1fr; }
   .reading-page { padding: 24px 16px 40px; }
 }
+/* Handbook: a focused reading surface with a live, executable example. */
+.handbook-hero { padding: 32px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); border-top: 4px solid var(--accent); }
+.handbook-hero h1 { font-size: clamp(36px, 6vw, 56px); letter-spacing: -0.04em; }
+.handbook-hero p { font-size: 18px; color: var(--ink-soft); max-width: 55ch; }
+.handbook-meta { font-size: 12px; color: var(--ink-soft); line-height: 1.8; }
+.handbook-section { padding-block: 32px; border-bottom: 1px solid var(--line); }
+.handbook-section h2 { font-size: clamp(22px, 3vw, 28px); margin: 12px 0 16px; letter-spacing: -0.025em; }
+.handbook-section p { line-height: 1.8; color: var(--ink-soft); }
+.handbook-section.intro-copy { max-width: none; margin: 0; }
+.handbook-section.intro-copy pre { background: var(--code-bg); color: var(--code-text); padding: 24px; font-size: 15px; }
+.state-parts { display: grid; grid-template-columns: 140px minmax(0, 1fr); max-width: 760px; gap: 0 20px; }
+.state-parts dt, .state-parts dd { margin: 0; padding: 14px 0; border-bottom: 1px solid var(--line); }
+.handbook-note { padding: 20px 24px; border-left: 3px solid var(--accent); background: var(--accent-tint); border-radius: 0 8px 8px 0; }
+.render-steps { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; padding: 20px 20px 20px 40px; border: 1px solid var(--line); border-radius: 10px; }
+.render-steps li { padding-left: 4px; }
+.render-steps li::marker { color: var(--accent); font-weight: 700; }
+.render-steps strong, .render-steps span { display: block; }
+.render-steps span { font-size: 13px; line-height: 1.7; color: var(--ink-soft); margin-top: 8px; }
+.handbook-prediction { background: var(--surface); margin-top: 28px; padding: 28px; border: 1px solid var(--line); border-radius: 12px; }
+.handbook-prediction [role='status'] { margin-bottom: 0; min-height: 2em; }
+.handbook-reference { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.handbook-reference details + details { border-top: 1px solid var(--line); }
+.handbook-reference summary { padding: 20px 24px; cursor: pointer; font-weight: 600; }
+.handbook-reference summary:hover { background: var(--accent-tint); }
+.handbook-reference details[open] { background: var(--surface); }
+.handbook-reference p { padding: 0 24px 8px; }
+.handbook-footer { padding-top: 12px; }
+@media (max-width: 760px) {
+  .handbook-hero { padding: 24px 20px; }
+  .handbook-prediction { padding: 20px; }
+  .render-steps { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .state-parts { grid-template-columns: 100px minmax(0, 1fr); gap: 0 12px; }
+  .handbook-section.intro-copy pre { padding: 16px; font-size: 12px; }
+}
+
+.handbook-section.intro-copy pre code { background: none; padding: 0; color: inherit; font: inherit; }

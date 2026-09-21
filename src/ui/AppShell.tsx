@@ -25,7 +25,7 @@ export function AppShell() {
               <span className="crumb-current">Lesson {current.id}</span>
             </>
           ) : (
-            <span className="crumb-current">{pathname === '/introduction' ? 'Lesson 0' : pathname === '/handbook' ? 'Handbook' : 'Course map'}</span>
+            <span className="crumb-current">{pathname === '/handbook' ? 'Handbook' : 'Course map'}</span>
           )}
         </div>
         <Link to="/handbook" className="handbook-link" aria-current={pathname === '/handbook' ? 'page' : undefined}>

@@ -1,10 +1,10 @@
 import { test, expect } from '@playwright/test'
 import { preview } from './helpers'
 
-test('introduction runs its displayed cart and leads into the course', async ({ page }) => {
+test('handbook runs its displayed cart and leads into the course', async ({ page }) => {
   await page.goto('./')
-  await page.getByRole('link', { name: 'Start with Lesson 0: What is state?' }).click()
-  await expect(page.getByRole('heading', { name: 'What is state?' })).toBeVisible()
+  await page.getByRole('link', { name: 'Handbook', exact: true }).first().click()
+  await expect(page.getByRole('heading', { name: 'Handbook', exact: true })).toBeVisible()
   await expect(preview(page).getByText('Items in cart: 0')).toBeVisible()
   await preview(page).getByRole('button', { name: 'Add to cart' }).click()
   await expect(preview(page).getByText('Items in cart: 1')).toBeVisible()
@@ -18,16 +18,17 @@ test('introduction runs its displayed cart and leads into the course', async ({ 
   await expect(page.getByRole('status')).toContainText('Exactly')
   await page.getByRole('link', { name: 'Start lesson 1' }).click()
   await expect(page).toHaveURL(/lesson\/1/)
-  await page.getByRole('link', { name: 'Handbook', exact: true }).click()
+  await page.getByRole('link', { name: 'Handbook', exact: true }).first().click()
   await page.reload()
-  await expect(page.getByRole('heading', { name: 'React state at a glance' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Handbook', exact: true })).toBeVisible()
   await expect(page.getByText('0 of 9 complete')).toBeVisible()
 })
 
-test('introduction fits a phone and supports keyboard answers', async ({ page }) => {
+test('legacy introduction redirects and handbook fits a phone and supports keyboard answers', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto('./#/introduction')
   await expect(preview(page).getByRole('button', { name: 'Add to cart' })).toBeVisible()
+  await expect(page).toHaveURL(/handbook/)
   const answer = page.getByRole('button', { name: '3 items' })
   await answer.focus()
   await page.keyboard.press('Enter')
