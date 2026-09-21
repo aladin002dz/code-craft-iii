@@ -1,9 +1,11 @@
-import { Link, Outlet, useParams } from '@tanstack/react-router'
+import { Link, Outlet, useParams, useLocation } from '@tanstack/react-router'
 import { lessons } from '../lessons'
 import { isUnlocked, progressStore, useStore } from '../state/stores'
+import { BookIcon } from './BookIcon'
 
 export function AppShell() {
   const { lessonId } = useParams({ strict: false })
+  const pathname = useLocation({ select: location => location.pathname })
   const completed = useStore(progressStore).completed
   const current = lessons.find(lesson => String(lesson.id) === lessonId)
 
@@ -23,9 +25,13 @@ export function AppShell() {
               <span className="crumb-current">Lesson {current.id}</span>
             </>
           ) : (
-            <span className="crumb-current">Course map</span>
+            <span className="crumb-current">{pathname === '/introduction' ? 'Lesson 0' : pathname === '/handbook' ? 'Handbook' : 'Course map'}</span>
           )}
         </div>
+        <Link to="/handbook" className="handbook-link" aria-current={pathname === '/handbook' ? 'page' : undefined}>
+          <BookIcon />
+          <span>Handbook</span>
+        </Link>
         <nav className="progress" aria-label="Lesson progress">
           <span className="progress-count">
             {completed.length} of {lessons.length} complete

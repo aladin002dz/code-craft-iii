@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router'
 import { useState } from 'react'
 import { lessons } from '../lessons'
 import { isUnlocked, progressStore, resetEverything, useStore } from '../state/stores'
+import { BookIcon } from './BookIcon'
 
 export function CoursePage() {
   const completed = useStore(progressStore).completed
@@ -18,6 +19,10 @@ export function CoursePage() {
           Nine short exercises across three small projects. Edit real React code, watch the live preview respond, and pass behaviour checks.
           Your progress and drafts stay in this browser.
         </p>
+        <div className="intro-actions">
+          <Link className="btn primary" to="/introduction">Start with Lesson 0: What is state?</Link>
+          <Link className="btn" to="/handbook"><BookIcon /> State handbook</Link>
+        </div>
         {finished ? (
           <p className="course-done" role="status">
             All nine lessons complete.

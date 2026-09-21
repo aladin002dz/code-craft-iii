@@ -5,13 +5,16 @@ import ReactDOM from 'react-dom/client'
 import { AppShell } from './ui/AppShell'
 import { CoursePage } from './ui/CoursePage'
 import { LessonPage } from './ui/LessonPage'
+import { IntroductionPage, HandbookPage } from './ui/IntroductionPage'
 import './styles.css'
 
 // Hash history keeps lesson links working on GitHub Pages, which cannot rewrite paths.
 const rootRoute = createRootRoute({ component: AppShell })
 const indexRoute = createRoute({ getParentRoute: () => rootRoute, path: '/', component: CoursePage })
 const lessonRoute = createRoute({ getParentRoute: () => rootRoute, path: '/lesson/$lessonId', component: LessonPage })
-const router = createRouter({ routeTree: rootRoute.addChildren([indexRoute, lessonRoute]), history: createHashHistory() })
+const introductionRoute = createRoute({ getParentRoute: () => rootRoute, path: '/introduction', component: IntroductionPage })
+const handbookRoute = createRoute({ getParentRoute: () => rootRoute, path: '/handbook', component: HandbookPage })
+const router = createRouter({ routeTree: rootRoute.addChildren([indexRoute, lessonRoute, introductionRoute, handbookRoute]), history: createHashHistory() })
 
 declare module '@tanstack/react-router' {
   interface Register {

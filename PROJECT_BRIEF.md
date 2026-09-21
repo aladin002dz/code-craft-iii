@@ -73,6 +73,8 @@ Use warm off-white, dark navy/ink, a restrained blue accent, crisp borders, mode
 
 Give most of the workspace to code and preview. On smaller screens, provide usable tabs or stacked panels instead of squeezing three narrow columns together. Preserve editor content when switching views.
 
+Layout refinement: desktop uses three columns with more width reserved for the editor; tablets (900–1179px) keep the preview and inspector beside a switchable Lesson/Code panel; narrower screens show one panel at a time with grouped check and progression controls. Editor keyboard guidance sits below the code. The course map uses an introduction beside the lesson list on larger screens and a single column on phones.
+
 Animate meaningful events: changed state values, affected preview elements, successful drops, and completed objectives. Keep animations brief, respect reduced-motion preferences, and avoid interfering with typing or focus.
 
 Drag-and-drop activities must have a keyboard or button alternative. Use them for tasks such as reordering a real task list or arranging update statements, with a clear connection to the lesson.
@@ -169,3 +171,9 @@ The first lesson is ready when:
 - The production build works at the configured GitHub Pages base path, including directly opening and refreshing a hash lesson link.
 
 Before considering the full game complete, apply equivalent acceptance checks to all nine lessons and verify the journey from first lesson to completion. Report what was implemented, what was verified, and any remaining limitations accurately.
+
+## Agreed introduction and handbook
+
+Add an optional Lesson 0, “What is state?”, before the nine exercises. It takes about 3–5 minutes and requires no coding. Learners try a shopping-cart count, learn that state is component memory, connect a setter to a new render, read the three parts of `useState`, and predict the result of adding one to a count of two. Explain render snapshots accurately. The displayed read-only example executes in the existing sandbox and the inspector observes its actual React state.
+
+The handbook shares the same basics explanation for later reference and is accessible from the course and workspace header. Lesson 0 uses `/introduction` and the handbook uses `/handbook` with the existing hash routing for GitHub Pages. The introduction is freely revisitable and does not change the nine exercises, their completion totals, saved drafts, or prerequisites.

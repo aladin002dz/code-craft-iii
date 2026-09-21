@@ -24,6 +24,7 @@ const DRAFT_DELAY_MS = 500
 export function Workspace({ lesson, next }: { lesson: Lesson; next: Lesson | null }) {
   const completedIds = useStore(progressStore).completed
   const wide = useMediaQuery('(min-width: 1180px)')
+  const tablet = useMediaQuery('(min-width: 900px) and (max-width: 1179px)')
   const collapsed = useStore(preferenceStore).sidebarCollapsed && wide
   const completedBefore = completedIds.includes(lesson.id)
 
@@ -176,7 +177,7 @@ export function Workspace({ lesson, next }: { lesson: Lesson; next: Lesson | nul
     <div className={`workspace${collapsed ? ' sidebar-collapsed' : ''}`} data-panel={panel}>
       <nav className="panel-tabs" aria-label="Workspace panels">
         {(['lesson', 'code', 'preview'] as const).map(id => (
-          <button key={id} aria-pressed={panel === id} onClick={() => setPanel(id)}>
+          <button key={id} aria-pressed={(tablet && panel === 'preview' ? 'code' : panel) === id} onClick={() => setPanel(id)}>
             {id === 'lesson' ? 'Lesson' : id === 'code' ? 'Code' : 'Preview'}
           </button>
         ))}
@@ -202,11 +203,13 @@ export function Workspace({ lesson, next }: { lesson: Lesson; next: Lesson | nul
           <h2 className="file-title">
             <span aria-hidden="true">▤</span> {lesson.filename}
           </h2>
-          <span className="pane-note" id="editor-help">
-            Ctrl+Enter runs checks · Esc then Tab leaves the editor
-          </span>
+          <span className="editor-language">React · JSX</span>
         </header>
         <CodeEditor value={code} onChange={setCode} marks={marks} label={`Code editor for ${lesson.filename}`} onRun={runChecks} />
+        <div className="editor-footer" id="editor-help">
+          <span>Ctrl+Enter runs checks</span>
+          <span>Esc then Tab leaves the editor</span>
+        </div>
       </section>
 
       <section className="area-preview" aria-label="Preview and inspector">

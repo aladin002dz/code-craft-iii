@@ -21,6 +21,7 @@
     "@tanstack/react-router": "^1.170.38",
     "acorn": "^8.18.0",
     "acorn-walk": "^8.3.5",
+    "lucide-react": "^1.47.0",
     "motion": "^13.4.0",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
