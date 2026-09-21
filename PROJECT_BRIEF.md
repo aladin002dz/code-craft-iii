@@ -177,3 +177,5 @@ Before considering the full game complete, apply equivalent acceptance checks to
 Merge Lesson 0 and the handbook into one page titled Handbook at /handbook. Remove Lesson 0 from visible navigation; redirect legacy /introduction links to the handbook. Preserve all nine exercises, completion totals, drafts, and prerequisites.
 
 Improve the merged resource with a restrained editorial layout, numbered sections, clear code and definition panels, and responsive preview panels. Retain the no-coding introduction, component memory, useState explanation, accurate snapshots, executable cart with actual state inspection and reset, and prediction feedback. Add expandable reference notes on queued updates, shared state and props, immutable updates, derived state, and component identity. Exercise screens are outside this visual refresh.
+
+Each expandable handbook pattern includes a short read-only React code example and an explanation of its expected behavior.
