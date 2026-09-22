@@ -2,17 +2,23 @@ import { Link, Outlet, useParams, useLocation } from '@tanstack/react-router'
 import { lessons } from '../lessons'
 import { isUnlocked, progressStore, useStore } from '../state/stores'
 import { BookIcon } from './BookIcon'
+import { useI18n } from '../i18n/I18nProvider'
+import { localizeLessons } from '../i18n/lessons'
+import type { Locale } from '../state/stores'
+import { useMemo } from 'react'
 
 export function AppShell() {
+  const { locale, copy, setLocale } = useI18n()
+  const localizedLessons = useMemo(() => localizeLessons(lessons, locale), [locale])
   const { lessonId } = useParams({ strict: false })
   const pathname = useLocation({ select: location => location.pathname })
   const completed = useStore(progressStore).completed
-  const current = lessons.find(lesson => String(lesson.id) === lessonId)
+  const current = localizedLessons.find(lesson => String(lesson.id) === lessonId)
 
   return (
     <div className="app">
       <header className="app-header">
-        <Link to="/" className="brand" aria-label="State Quest, course map">
+        <Link to="/" className="brand" aria-label={copy.header.brandLabel}>
           STATE <span>QUEST</span>
         </Link>
         <div className="crumbs">
@@ -22,25 +28,33 @@ export function AppShell() {
               <span className="crumb-sep" aria-hidden="true">
                 /
               </span>
-              <span className="crumb-current">Lesson {current.id}</span>
+              <span className="crumb-current">{copy.header.lesson(current.id)}</span>
             </>
           ) : (
-            <span className="crumb-current">{pathname === '/handbook' ? 'Handbook' : 'Course map'}</span>
+            <span className="crumb-current">{pathname === '/handbook' ? copy.header.handbook : copy.header.courseMap}</span>
           )}
         </div>
         <Link to="/handbook" className="handbook-link" aria-current={pathname === '/handbook' ? 'page' : undefined}>
           <BookIcon />
-          <span>Handbook</span>
+          <span>{copy.header.handbook}</span>
         </Link>
-        <nav className="progress" aria-label="Lesson progress">
+        <label className="language-picker">
+          <span className="sr-only">{copy.language}</span>
+          <select value={locale} onChange={event => setLocale(event.target.value as Locale)} aria-label={copy.language}>
+            <option value="en">English</option>
+            <option value="fr">Français</option>
+            <option value="ar">العربية</option>
+          </select>
+        </label>
+        <nav className="progress" aria-label={copy.header.progressLabel}>
           <span className="progress-count">
-            {completed.length} of {lessons.length} complete
+            {copy.header.progress(completed.length, localizedLessons.length)}
           </span>
           <ol className="dots">
-            {lessons.map(lesson => {
+            {localizedLessons.map(lesson => {
               const done = completed.includes(lesson.id)
               const open = isUnlocked(lesson.prerequisite, completed)
-              const label = `Lesson ${lesson.id}: ${lesson.title}${done ? ', complete' : open ? '' : ', locked'}`
+              const label = copy.header.lessonState(lesson.id, lesson.title, done ? 'complete' : open ? 'open' : 'locked')
               return (
                 <li key={lesson.id}>
                   {open ? (

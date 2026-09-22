@@ -1,4 +1,4 @@
-export type ProjectName = 'Settings panel' | 'Shopping cart' | 'Task board'
+export type ProjectName = string
 
 export type Objective = {
   /** Matches the id of a check in src/frame/checks. */

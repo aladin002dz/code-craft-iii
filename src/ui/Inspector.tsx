@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { formatValue, type InspectorGroup } from '../runtime/inspector'
+import { useI18n } from '../i18n/I18nProvider'
 
 type Props = { groups: InspectorGroup[]; running: boolean }
 
@@ -12,6 +13,7 @@ function valueClass(value: unknown) {
 
 /** Shows what React currently holds for the previewed component. It observes; it never owns state. */
 export function Inspector({ groups, running }: Props) {
+  const { copy } = useI18n()
   const previous = useRef(new Map<string, string>())
 
   const rendered = groups.flatMap(group => group.rows.map(row => [row.id, formatValue(row.value)] as const))
@@ -22,12 +24,12 @@ export function Inspector({ groups, running }: Props) {
   return (
     <section className="inspector" aria-labelledby="inspector-title">
       <header className="pane-header">
-        <h2 id="inspector-title">State inspector</h2>
-        <span className="pane-note">Values React is holding</span>
+        <h2 id="inspector-title">{copy.inspector.title}</h2>
+        <span className="pane-note">{copy.inspector.note}</span>
       </header>
       <div className="inspector-body" data-testid="inspector">
         {groups.length === 0 ? (
-          <p className="inspector-empty">{running ? 'No state yet. Components appear here once they call useState.' : 'Waiting for the preview…'}</p>
+          <p className="inspector-empty">{running ? copy.inspector.noState : copy.inspector.waiting}</p>
         ) : (
           groups.map(group => (
             <div className="inspector-group" key={group.id}>

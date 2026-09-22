@@ -1,11 +1,13 @@
 import { motion } from 'motion/react'
 import type { ObjectiveView } from '../runtime/status'
+import { useI18n } from '../i18n/I18nProvider'
 
 const ICON = { passed: '✓', failed: '!', pending: '' } as const
 
 export function Checklist({ objectives, checking }: { objectives: ObjectiveView[]; checking: boolean }) {
+  const { copy } = useI18n()
   return (
-    <ul className="checklist" aria-label="Objectives" aria-busy={checking}>
+    <ul className="checklist" aria-label={copy.checklist.label} aria-busy={checking}>
       {objectives.map(objective => (
         <li key={objective.id} className={`check-item ${objective.state}`} data-state={objective.state} data-testid={`objective-${objective.id}`}>
           <motion.span
@@ -22,7 +24,7 @@ export function Checklist({ objectives, checking }: { objectives: ObjectiveView[
             <span className="check-label">
               {objective.label}
               <span className="sr-only">
-                {objective.state === 'passed' ? ' — passed' : objective.state === 'failed' ? ' — not yet' : ' — not checked yet'}
+                {' — '}{objective.state === 'passed' ? copy.checklist.passed : objective.state === 'failed' ? copy.checklist.failed : copy.checklist.pending}
               </span>
             </span>
             {objective.message && (

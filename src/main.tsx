@@ -6,6 +6,7 @@ import { AppShell } from './ui/AppShell'
 import { CoursePage } from './ui/CoursePage'
 import { LessonPage } from './ui/LessonPage'
 import { HandbookPage } from './ui/HandbookPage'
+import { I18nProvider } from './i18n/I18nProvider'
 import './styles.css'
 
 // Hash history keeps lesson links working on GitHub Pages, which cannot rewrite paths.
@@ -24,9 +25,11 @@ declare module '@tanstack/react-router' {
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    {/* "user" honours the OS reduced-motion setting for movement-based animation. */}
-    <MotionConfig reducedMotion="user">
-      <RouterProvider router={router} />
-    </MotionConfig>
+    <I18nProvider>
+      {/* "user" honours the OS reduced-motion setting for movement-based animation. */}
+      <MotionConfig reducedMotion="user">
+        <RouterProvider router={router} />
+      </MotionConfig>
+    </I18nProvider>
   </React.StrictMode>,
 )

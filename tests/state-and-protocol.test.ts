@@ -27,7 +27,8 @@ describe('saved work', () => {
   it('drops invalid lesson ids and oversized drafts', () => {
     expect(parseProgress({ completed: [2, 1, 2, 0, 10, '3'] })).toEqual({ completed: [1, 2] })
     expect(parseDrafts({ 1: 'valid', 2: 'x'.repeat(50_001), 10: 'wrong id' })).toEqual({ 1: 'valid' })
-    expect(parsePreferences({ sidebarCollapsed: 'yes' })).toEqual({ sidebarCollapsed: false })
+    expect(parsePreferences({ sidebarCollapsed: 'yes' })).toEqual({ sidebarCollapsed: false, locale: 'en' })
+    expect(parsePreferences({ sidebarCollapsed: true, locale: 'ar' })).toEqual({ sidebarCollapsed: true, locale: 'ar' })
   })
 })
 

@@ -1,19 +1,21 @@
 import { useId, useState } from 'react'
 import type { Prediction } from '../lessons/types'
+import { useI18n } from '../i18n/I18nProvider'
 
 /** A short "what will happen?" question. It never blocks the lesson; it exposes a misconception first. */
 export function PredictionCard({ prediction }: { prediction: Prediction }) {
+  const { copy } = useI18n()
   const [choice, setChoice] = useState<number | null>(null)
   const name = useId()
   const answered = choice !== null
   const correct = choice === prediction.answer
 
   return (
-    <section className="prediction" aria-label="Prediction">
-      <div className="eyebrow">Predict first</div>
+    <section className="prediction" aria-label={copy.prediction.label}>
+      <div className="eyebrow">{copy.prediction.heading}</div>
       <p className="prediction-question">{prediction.question}</p>
       {prediction.code && <pre className="prediction-code">{prediction.code}</pre>}
-      <div className="prediction-options" role="radiogroup" aria-label="Your prediction">
+      <div className="prediction-options" role="radiogroup" aria-label={copy.prediction.options}>
         {prediction.options.map((option, index) => (
           <label
             key={option}
@@ -26,7 +28,7 @@ export function PredictionCard({ prediction }: { prediction: Prediction }) {
       </div>
       {answered && (
         <p className="prediction-result" role="status">
-          <strong>{correct ? 'Yes.' : `Not quite: the answer is ${prediction.options[prediction.answer]}.`}</strong> {prediction.explanation}
+          <strong>{correct ? copy.prediction.yes : copy.prediction.wrong(prediction.options[prediction.answer])}</strong> {prediction.explanation}
         </p>
       )}
     </section>

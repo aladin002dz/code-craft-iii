@@ -3,6 +3,7 @@ import type { Lesson } from '../lessons/types'
 import type { ObjectiveView } from '../runtime/status'
 import { Checklist } from './Checklist'
 import { PredictionCard } from './PredictionCard'
+import { useI18n } from '../i18n/I18nProvider'
 
 export type SidebarTab = 'instructions' | 'files'
 
@@ -19,12 +20,12 @@ type Props = {
   onNextHint: () => void
 }
 
-const TABS: { id: SidebarTab; label: string }[] = [
-  { id: 'instructions', label: 'Instructions' },
-  { id: 'files', label: 'Files' },
-]
-
 export function Sidebar({ lesson, tab, onTab, collapsed, canCollapse, onToggleCollapsed, objectives, checking, hintsShown, onNextHint }: Props) {
+  const { copy } = useI18n()
+  const tabs: { id: SidebarTab; label: string }[] = [
+    { id: 'instructions', label: copy.sidebar.instructions },
+    { id: 'files', label: copy.sidebar.files },
+  ]
   const tabRefs = useRef<Record<SidebarTab, HTMLButtonElement | null>>({ instructions: null, files: null })
 
   function onKeyDown(event: KeyboardEvent) {
@@ -36,10 +37,10 @@ export function Sidebar({ lesson, tab, onTab, collapsed, canCollapse, onToggleCo
   }
 
   return (
-    <aside className={`sidebar${collapsed ? ' collapsed' : ''}`} aria-label="Lesson sidebar">
-      <div className="sidebar-tabs" role="tablist" aria-label="Sidebar views" onKeyDown={onKeyDown}>
+    <aside className={`sidebar${collapsed ? ' collapsed' : ''}`} aria-label={copy.sidebar.label}>
+      <div className="sidebar-tabs" role="tablist" aria-label={copy.sidebar.views} onKeyDown={onKeyDown}>
         {!collapsed &&
-          TABS.map(item => (
+          tabs.map(item => (
             <button
               key={item.id}
               ref={element => {
@@ -61,8 +62,8 @@ export function Sidebar({ lesson, tab, onTab, collapsed, canCollapse, onToggleCo
           className="icon-toggle"
           onClick={onToggleCollapsed}
           aria-expanded={!collapsed}
-          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          aria-label={collapsed ? copy.sidebar.expand : copy.sidebar.collapse}
+          title={collapsed ? copy.sidebar.expand : copy.sidebar.collapse}
         >
           {collapsed ? '»' : '«'}
         </button>
@@ -71,7 +72,7 @@ export function Sidebar({ lesson, tab, onTab, collapsed, canCollapse, onToggleCo
 
       {!collapsed && tab === 'instructions' && (
         <div className="sidebar-panel" role="tabpanel" id="panel-instructions" aria-labelledby="tab-instructions">
-          <div className="eyebrow">Your task</div>
+          <div className="eyebrow">{copy.sidebar.yourTask}</div>
           <h1 className="task-title">{lesson.title}</h1>
           <p className="task-request">{lesson.request}</p>
 
@@ -83,12 +84,12 @@ export function Sidebar({ lesson, tab, onTab, collapsed, canCollapse, onToggleCo
             ))}
           </ol>
 
-          <div className="eyebrow section-label">Checklist</div>
+          <div className="eyebrow section-label">{copy.sidebar.checklist}</div>
           <Checklist objectives={objectives} checking={checking} />
 
           {hintsShown > 0 && (
-            <div className="hints" aria-label="Hints">
-              <div className="eyebrow section-label">Hints</div>
+            <div className="hints" aria-label={copy.sidebar.hints}>
+              <div className="eyebrow section-label">{copy.sidebar.hints}</div>
               {lesson.hints.slice(0, hintsShown).map((hint, index) => (
                 <p key={hint} className="hint" data-testid={`hint-${index + 1}`}>
                   <span className="hint-number">{index + 1}</span>
@@ -97,14 +98,14 @@ export function Sidebar({ lesson, tab, onTab, collapsed, canCollapse, onToggleCo
               ))}
               {hintsShown < lesson.hints.length && (
                 <button className="link-button" onClick={onNextHint}>
-                  Show another hint
+                  {copy.sidebar.showAnother}
                 </button>
               )}
             </div>
           )}
 
           <div className="key-idea">
-            <div className="eyebrow">Key idea</div>
+            <div className="eyebrow">{copy.sidebar.keyIdea}</div>
             <p>{lesson.concept}</p>
           </div>
         </div>
@@ -115,17 +116,14 @@ export function Sidebar({ lesson, tab, onTab, collapsed, canCollapse, onToggleCo
           <ul className="file-list">
             <li className="file active">
               <span className="file-name">{lesson.filename}</span>
-              <span className="file-badge">You edit this</span>
+              <span className="file-badge">{copy.sidebar.editThis}</span>
             </li>
             <li className="file">
               <span className="file-name">styles.css</span>
-              <span className="file-badge muted-badge">Supplied</span>
+              <span className="file-badge muted-badge">{copy.sidebar.supplied}</span>
             </li>
           </ul>
-          <p className="muted-copy">
-            Styling is supplied so you can focus on React. The lesson lives in a single component file, and the preview renders whatever it
-            exports as <code>default</code>.
-          </p>
+          <p className="muted-copy">{copy.sidebar.suppliedHelp}</p>
         </div>
       )}
     </aside>

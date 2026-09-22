@@ -19,6 +19,7 @@ The latest proposed lesson-screen mockup is [docs/design/state-quest-lesson-1-mo
 - Include animations and drag-and-drop activities where they reinforce a concept or implement a realistic feature.
 - Keep learner-facing examples focused on React. The application itself uses TypeScript, but early examples should avoid unnecessary type syntax.
 - Save progress and exercise drafts in the current browser. Cross-device accounts and cloud saves are outside the initial scope.
+- Support English, French, and Arabic across the course map, handbook, lesson content, workspace controls, feedback, and accessibility labels. Save the selected language as a browser preference without affecting progress or drafts. Arabic uses an RTL interface while source code, filenames, technical identifiers, and code examples remain LTR and unchanged, so switching languages never invalidates learner code or behavior checks.
 
 ## Curriculum
 

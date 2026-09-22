@@ -11,7 +11,8 @@ export type Progress = { completed: number[] }
 /** Learner code, keyed by lesson id. */
 export type Drafts = Record<string, string>
 /** Interface preferences. */
-export type Preferences = { sidebarCollapsed: boolean }
+export type Locale = 'en' | 'fr' | 'ar'
+export type Preferences = { sidebarCollapsed: boolean; locale: Locale }
 
 export const parseProgress = (raw: unknown): Progress | null => {
   if (!isRecord(raw) || !Array.isArray(raw.completed)) return null
@@ -28,7 +29,12 @@ export const parseDrafts = (raw: unknown): Drafts | null => {
 }
 
 export const parsePreferences = (raw: unknown): Preferences | null =>
-  isRecord(raw) ? { sidebarCollapsed: raw.sidebarCollapsed === true } : null
+  isRecord(raw)
+    ? {
+        sidebarCollapsed: raw.sidebarCollapsed === true,
+        locale: raw.locale === 'fr' || raw.locale === 'ar' ? raw.locale : 'en',
+      }
+    : null
 
 const PREFIX = 'state-quest'
 
@@ -49,7 +55,7 @@ export const draftStore: Store<Drafts> = createStore({
 export const preferenceStore: Store<Preferences> = createStore({
   key: `${PREFIX}:preferences`,
   version: 1,
-  initial: () => ({ sidebarCollapsed: false }),
+  initial: () => ({ sidebarCollapsed: false, locale: 'en' }),
   parse: parsePreferences,
 })
 

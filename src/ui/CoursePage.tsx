@@ -1,42 +1,43 @@
 import { Link } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { lessons } from '../lessons'
 import { isUnlocked, progressStore, resetEverything, useStore } from '../state/stores'
 import { BookIcon } from './BookIcon'
+import { useI18n } from '../i18n/I18nProvider'
+import { localizeLessons } from '../i18n/lessons'
 
 export function CoursePage() {
+  const { locale, copy } = useI18n()
+  const localizedLessons = useMemo(() => localizeLessons(lessons, locale), [locale])
   const completed = useStore(progressStore).completed
   const [confirming, setConfirming] = useState(false)
-  const nextLesson = lessons.find(lesson => !completed.includes(lesson.id) && isUnlocked(lesson.prerequisite, completed))
-  const finished = completed.length === lessons.length
+  const nextLesson = localizedLessons.find(lesson => !completed.includes(lesson.id) && isUnlocked(lesson.prerequisite, completed))
+  const finished = completed.length === localizedLessons.length
 
   return (
     <div className="course">
       <section className="course-intro">
-        <div className="eyebrow">React state, hands on</div>
-        <h1>Learn state by finishing real features</h1>
-        <p>
-          Nine short exercises across three small projects. Edit real React code, watch the live preview respond, and pass behaviour checks.
-          Your progress and drafts stay in this browser.
-        </p>
+        <div className="eyebrow">{copy.course.eyebrow}</div>
+        <h1>{copy.course.title}</h1>
+        <p>{copy.course.description}</p>
         <div className="intro-actions">
-          <Link className="btn" to="/handbook"><BookIcon /> Handbook</Link>
+          <Link className="btn" to="/handbook"><BookIcon /> {copy.header.handbook}</Link>
         </div>
         {finished ? (
           <p className="course-done" role="status">
-            All nine lessons complete.
+            {copy.course.allComplete}
           </p>
         ) : (
           nextLesson && (
             <Link className="btn primary" to="/lesson/$lessonId" params={{ lessonId: String(nextLesson.id) }} data-testid="continue">
-              {completed.length === 0 ? 'Start lesson 1' : `Continue with lesson ${nextLesson.id}`} <span aria-hidden="true">→</span>
+              {completed.length === 0 ? copy.course.start : copy.course.continue(nextLesson.id)} <span aria-hidden="true">{locale === 'ar' ? '←' : '→'}</span>
             </Link>
           )
         )}
       </section>
 
-      <ol className="lesson-map" aria-label="Lessons">
-        {lessons.map(lesson => {
+      <ol className="lesson-map" aria-label={copy.course.lessonsLabel}>
+        {localizedLessons.map(lesson => {
           const done = completed.includes(lesson.id)
           const open = isUnlocked(lesson.prerequisite, completed)
           const body = (
@@ -49,7 +50,7 @@ export function CoursePage() {
                 <span className="lesson-title">{lesson.title}</span>
                 <span className="lesson-project">{lesson.project}</span>
               </span>
-              <span className="lesson-state">{done ? 'Complete' : open ? 'Ready' : 'Locked'}</span>
+              <span className="lesson-state">{done ? copy.course.complete : open ? copy.course.ready : copy.course.locked}</span>
             </>
           )
           return (
@@ -61,7 +62,7 @@ export function CoursePage() {
               ) : (
                 <div className="lesson-card locked" aria-disabled="true">
                   {body}
-                  <span className="sr-only"> Complete lesson {lesson.prerequisite} to unlock.</span>
+                  <span className="sr-only"> {copy.course.unlock(lesson.prerequisite!)}</span>
                 </div>
               )}
             </li>
@@ -71,8 +72,8 @@ export function CoursePage() {
 
       <div className="course-footer">
         {confirming ? (
-          <span className="confirm-reset" role="alertdialog" aria-label="Confirm progress reset">
-            Erase all progress and saved code in this browser?
+          <span className="confirm-reset" role="alertdialog" aria-label={copy.course.resetQuestion}>
+            {copy.course.resetQuestion}
             <button
               className="btn danger"
               onClick={() => {
@@ -80,15 +81,15 @@ export function CoursePage() {
                 setConfirming(false)
               }}
             >
-              Yes, erase
+              {copy.course.erase}
             </button>
             <button className="btn" onClick={() => setConfirming(false)}>
-              Cancel
+              {copy.course.cancel}
             </button>
           </span>
         ) : (
           <button className="link-button" onClick={() => setConfirming(true)}>
-            Reset all progress
+            {copy.course.resetAll}
           </button>
         )}
       </div>

@@ -120,8 +120,8 @@ code {
   font-weight: 800;
   letter-spacing: -0.01em;
   text-decoration: none;
-  padding-right: 20px;
-  border-right: 1px solid var(--line);
+  padding-inline-end: 20px;
+  border-inline-end: 1px solid var(--line);
   line-height: 32px;
 }
 
@@ -147,10 +147,25 @@ code {
 
 .progress {
   flex-shrink: 0;
-  margin-left: auto;
+  margin-inline-start: auto;
   display: flex;
   align-items: center;
   gap: 14px;
+}
+
+.language-picker {
+  flex: none;
+}
+
+.language-picker select {
+  min-height: 34px;
+  padding: 0 28px 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  font-size: 13px;
+  cursor: pointer;
 }
 
 .progress-count {
@@ -545,7 +560,7 @@ a.lesson-card:hover {
 }
 
 .icon-toggle {
-  margin-left: auto;
+  margin-inline-start: auto;
   width: 32px;
   height: 32px;
   border: 0;
@@ -584,7 +599,7 @@ a.lesson-card:hover {
 }
 
 .steps {
-  padding-left: 20px;
+  padding-inline-start: 20px;
   display: grid;
   gap: 4px;
   color: var(--ink-soft);
@@ -829,7 +844,7 @@ a.lesson-card:hover {
 }
 
 .preview-freshness {
-  margin-left: auto;
+  margin-inline-start: auto;
 }
 
 .device-toggle {
@@ -978,7 +993,7 @@ a.lesson-card:hover {
 }
 
 .state-colon {
-  margin-left: -6px;
+  margin-inline-start: -6px;
   color: var(--code-muted);
 }
 
@@ -1142,7 +1157,7 @@ a.lesson-card:hover {
   }
 
   .brand {
-    padding-right: 12px;
+    padding-inline-end: 12px;
     font-size: 17px;
   }
 
@@ -1310,9 +1325,18 @@ a.lesson-card:hover {
 .handbook-link:hover,
 .handbook-link[aria-current='page'] { color: var(--accent); }
 .book-icon { flex: none; }
-.btn .book-icon { margin-right: 2px; }
+.btn .book-icon { margin-inline-end: 2px; }
 @media (max-width: 760px) {
   .reading-page { padding: 24px 16px 40px; }
+
+  .handbook-link span,
+  .progress-count {
+    display: none;
+  }
+
+  .language-picker select {
+    max-width: 102px;
+  }
 }
 /* Handbook: a compact visual reference. */
 .handbook-hero { padding: 24px 28px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); border-top: 4px solid var(--accent); }
@@ -1343,7 +1367,7 @@ a.lesson-card:hover {
 .handbook-reference details + details { border-top: 1px solid var(--line); }
 .handbook-reference summary { display: flex; align-items: center; gap: 14px; padding: 18px 20px; cursor: pointer; font-weight: 650; list-style: none; }
 .handbook-reference summary::-webkit-details-marker { display: none; }
-.handbook-reference summary::after { content: '+'; margin-left: auto; color: var(--accent); font-size: 22px; font-weight: 400; }
+.handbook-reference summary::after { content: '+'; margin-inline-start: auto; color: var(--accent); font-size: 22px; font-weight: 400; }
 .handbook-reference details[open] summary::after { content: '−'; }
 .handbook-reference summary:hover { background: var(--accent-tint); }
 .handbook-reference details[open] { background: var(--surface); }
@@ -1381,6 +1405,29 @@ a.lesson-card:hover {
   .handbook-reference .pattern-rule { padding-inline: 16px; }
   .copy-examples { grid-template-columns: minmax(0, 1fr); margin-inline: 16px; }
   .pattern-flow { margin-inline: 16px; }
+}
+
+/* Arabic uses an RTL reading flow; source code and technical values stay LTR. */
+[dir='rtl'] .eyebrow,
+[dir='rtl'] .concept-label,
+[dir='rtl'] .mutation-example > span {
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+[dir='rtl'] pre,
+[dir='rtl'] code,
+[dir='rtl'] .code-editor,
+[dir='rtl'] .file-name,
+[dir='rtl'] .state-value,
+[dir='rtl'] .inspector-component,
+[dir='rtl'] .state-name {
+  direction: ltr;
+  text-align: left;
+}
+
+[dir='rtl'] .memory-visual > b {
+  transform: scaleX(-1);
 }
 
 .handbook-reference .pattern-example { margin: 0 24px 20px; padding: 20px; overflow-x: auto; border-radius: 8px; background: var(--code-bg); color: var(--code-text); font: 13px/1.7 var(--font-mono); }

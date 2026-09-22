@@ -14,6 +14,9 @@ import { CodeEditor, type LineMark } from './CodeEditor'
 import { Inspector } from './Inspector'
 import { Sidebar, type SidebarTab } from './Sidebar'
 import { useMediaQuery } from './useMediaQuery'
+import { useI18n } from '../i18n/I18nProvider'
+import { localizeCheckMessage } from '../i18n/checks'
+import type { UiCopy } from '../i18n/ui'
 
 type Panel = 'lesson' | 'code' | 'preview'
 type Failure = { code: string; message: string; line: number | null }
@@ -22,6 +25,7 @@ const PREVIEW_DELAY_MS = 350
 const DRAFT_DELAY_MS = 500
 
 export function Workspace({ lesson, next }: { lesson: Lesson; next: Lesson | null }) {
+  const { locale, copy } = useI18n()
   const completedIds = useStore(progressStore).completed
   const wide = useMediaQuery('(min-width: 1180px)')
   const tablet = useMediaQuery('(min-width: 900px) and (max-width: 1179px)')
@@ -125,37 +129,40 @@ export function Workspace({ lesson, next }: { lesson: Lesson; next: Lesson | nul
     setSidebarTab('instructions')
     try {
       if (!compiled.ok) {
-        const where = compiled.line ? ` on line ${compiled.line}` : ''
-        const message = `Fix the syntax error${where} first: ${compiled.message}`
+        const where = compiled.line ? copy.workspace.line(compiled.line) : ''
+        const message = copy.workspace.syntaxFirst(where, compiled.message)
         lesson.objectives.forEach(objective => (outcomes[objective.id] = { passed: false, message }))
       } else {
         const result = await controller.current?.runChecks(compiled.js)
         if (result?.status === 'done') {
-          result.outcomes.forEach(outcome => (outcomes[outcome.id] = { passed: outcome.passed, message: outcome.message }))
+          result.outcomes.forEach(outcome => (outcomes[outcome.id] = {
+            passed: outcome.passed,
+            message: localizeCheckMessage(locale, lesson.id, outcome.id, outcome.message),
+          }))
         } else {
-          const message = 'The checks did not finish. Look for a loop that never ends.'
+          const message = copy.workspace.checksTimedOut
           lesson.objectives.forEach(objective => (outcomes[objective.id] = { passed: false, message }))
         }
       }
       // A missing outcome is a failure, so a check that never reported cannot pass by omission.
-      lesson.objectives.forEach(objective => (outcomes[objective.id] ??= { passed: false, message: 'This objective could not be checked.' }))
+      lesson.objectives.forEach(objective => (outcomes[objective.id] ??= { passed: false, message: copy.workspace.objectiveUnchecked }))
       const finished: CheckRun = { code: checked, outcomes }
       setRun(finished)
       const passed = lesson.objectives.filter(objective => outcomes[objective.id].passed).length
       const all = passed === lesson.objectives.length
       if (all) markComplete(lesson.id)
-      setAnnouncement(all ? `All ${passed} checks passed. Lesson complete.` : `${passed} of ${lesson.objectives.length} checks passed.`)
+      setAnnouncement(all ? copy.workspace.allPassedAnnouncement(passed) : copy.workspace.somePassedAnnouncement(passed, lesson.objectives.length))
     } finally {
       setChecking(false)
     }
-  }, [lesson])
+  }, [lesson, locale, copy])
 
   function reset() {
     clearDraft(lesson.id)
     setCode(lesson.starter)
     setRun(null)
     setConfirmReset(false)
-    setAnnouncement('Code reset to the starting point.')
+    setAnnouncement(copy.workspace.resetAnnouncement)
   }
 
   const marks = useMemo<LineMark[]>(() => {
@@ -164,21 +171,21 @@ export function Workspace({ lesson, next }: { lesson: Lesson; next: Lesson | nul
   }, [code, lesson.focus, compileFailure])
 
   const inspector = useMemo(() => buildInspector(snapshot, code), [snapshot, code])
-  const errorText = describeProblem(compileFailure, unresponsive, runtimeError)
+  const errorText = describeProblem(compileFailure, unresponsive, runtimeError, copy)
 
   const summary = {
-    complete: `${status.passedCount} of ${lesson.objectives.length} checks passed`,
-    failing: `${status.passedCount} of ${lesson.objectives.length} checks passed`,
-    unchecked: 'Checks not run yet',
-    'edited-after-complete': 'Completed. Run checks again after editing',
+    complete: copy.workspace.checksPassed(status.passedCount, lesson.objectives.length),
+    failing: copy.workspace.checksPassed(status.passedCount, lesson.objectives.length),
+    unchecked: copy.workspace.notRun,
+    'edited-after-complete': copy.workspace.editedAfter,
   }[status.headline]
 
   return (
     <div className={`workspace${collapsed ? ' sidebar-collapsed' : ''}`} data-panel={panel}>
-      <nav className="panel-tabs" aria-label="Workspace panels">
+      <nav className="panel-tabs" aria-label={copy.workspace.panels}>
         {(['lesson', 'code', 'preview'] as const).map(id => (
           <button key={id} aria-pressed={(tablet && panel === 'preview' ? 'code' : panel) === id} onClick={() => setPanel(id)}>
-            {id === 'lesson' ? 'Lesson' : id === 'code' ? 'Code' : 'Preview'}
+            {id === 'lesson' ? copy.workspace.panelLesson : id === 'code' ? copy.workspace.panelCode : copy.workspace.panelPreview}
           </button>
         ))}
       </nav>
@@ -198,32 +205,32 @@ export function Workspace({ lesson, next }: { lesson: Lesson; next: Lesson | nul
         />
       </div>
 
-      <section className="area-editor pane" aria-label="Code editor">
+      <section className="area-editor pane" aria-label={copy.workspace.editor} dir="ltr">
         <header className="pane-header">
           <h2 className="file-title">
             <span aria-hidden="true">▤</span> {lesson.filename}
           </h2>
           <span className="editor-language">React · JSX</span>
         </header>
-        <CodeEditor value={code} onChange={setCode} marks={marks} label={`Code editor for ${lesson.filename}`} onRun={runChecks} />
+        <CodeEditor value={code} onChange={setCode} marks={marks} label={copy.workspace.editorFor(lesson.filename)} onRun={runChecks} />
         <div className="editor-footer" id="editor-help">
-          <span>Ctrl+Enter runs checks</span>
-          <span>Esc then Tab leaves the editor</span>
+          <span>{copy.workspace.runShortcut}</span>
+          <span>{copy.workspace.leaveEditor}</span>
         </div>
       </section>
 
-      <section className="area-preview" aria-label="Preview and inspector">
+      <section className="area-preview" aria-label={copy.workspace.previewAndInspector}>
         <div className="pane preview-pane">
           <header className="pane-header">
-            <h2>Live preview</h2>
+            <h2>{copy.workspace.livePreview}</h2>
             <span className="pane-note preview-freshness" aria-live="off">
-              {compileFailure ? 'Paused: fix the error' : renderedCode === code ? 'Up to date' : 'Updating…'}
+              {compileFailure ? copy.workspace.paused : renderedCode === code ? copy.workspace.upToDate : copy.workspace.updating}
             </span>
-            <div className="device-toggle" role="group" aria-label="Preview width">
-              <button aria-pressed={!narrowPreview} onClick={() => setNarrowPreview(false)} aria-label="Full width" title="Full width">
+            <div className="device-toggle" role="group" aria-label={copy.workspace.previewWidth}>
+              <button aria-pressed={!narrowPreview} onClick={() => setNarrowPreview(false)} aria-label={copy.workspace.fullWidth} title={copy.workspace.fullWidth}>
                 ▭
               </button>
-              <button aria-pressed={narrowPreview} onClick={() => setNarrowPreview(true)} aria-label="Phone width" title="Phone width">
+              <button aria-pressed={narrowPreview} onClick={() => setNarrowPreview(true)} aria-label={copy.workspace.phoneWidth} title={copy.workspace.phoneWidth}>
                 ▯
               </button>
             </div>
@@ -244,7 +251,7 @@ export function Workspace({ lesson, next }: { lesson: Lesson; next: Lesson | nul
             )}
           </AnimatePresence>
           <div className="preview-stage" data-narrow={narrowPreview} data-ready={previewReady} data-fresh={renderedCode === code} ref={stage}>
-            {!previewReady && <div className="preview-loading">Starting preview…</div>}
+            {!previewReady && <div className="preview-loading">{copy.workspace.startingPreview}</div>}
           </div>
         </div>
         <Inspector groups={inspector} running={previewReady} />
@@ -253,19 +260,19 @@ export function Workspace({ lesson, next }: { lesson: Lesson; next: Lesson | nul
       <footer className="area-actions action-bar">
         <div className="action-left">
           {confirmReset ? (
-            <div className="confirm-reset" role="alertdialog" aria-label="Confirm reset">
-              <span>Discard your code for this lesson?</span>
+            <div className="confirm-reset" role="alertdialog" aria-label={copy.workspace.resetQuestion}>
+              <span>{copy.workspace.resetQuestion}</span>
               <button className="btn danger" onClick={reset}>
-                Yes, reset
+                {copy.workspace.yesReset}
               </button>
               <button className="btn" onClick={() => setConfirmReset(false)}>
-                Cancel
+                {copy.workspace.cancel}
               </button>
             </div>
           ) : (
             <>
               <button className="btn" onClick={() => setConfirmReset(true)}>
-                <span aria-hidden="true">↺</span> Reset
+                <span aria-hidden="true">↺</span> {copy.workspace.reset}
               </button>
               <button
                 className="btn"
@@ -276,14 +283,14 @@ export function Workspace({ lesson, next }: { lesson: Lesson; next: Lesson | nul
                 }}
                 disabled={hintsShown >= lesson.hints.length}
               >
-                <span aria-hidden="true">💡</span> Hint{hintsShown > 0 ? ` (${hintsShown}/${lesson.hints.length})` : ''}
+                <span aria-hidden="true">💡</span> {hintsShown > 0 ? copy.workspace.hintCount(hintsShown, lesson.hints.length) : copy.workspace.hint}
               </button>
             </>
           )}
         </div>
         <div className="action-right">
           <button className="btn run" onClick={runChecks} disabled={checking || !runtimeReady} data-testid="run-checks">
-            {checking ? 'Running checks…' : 'Run checks'}
+            {checking ? copy.workspace.runningChecks : copy.workspace.runChecks}
           </button>
           <span className={`status-pill ${status.headline}`} data-testid="status-pill">
             {status.headline === 'complete' && <span aria-hidden="true">✓ </span>}
@@ -292,25 +299,25 @@ export function Workspace({ lesson, next }: { lesson: Lesson; next: Lesson | nul
           {next ? (
             status.completed ? (
               <Link className="btn primary" to="/lesson/$lessonId" params={{ lessonId: String(next.id) }} data-testid="next-lesson">
-                Next lesson <span aria-hidden="true">→</span>
+                {copy.workspace.nextLesson} <span aria-hidden="true">{locale === 'ar' ? '←' : '→'}</span>
               </Link>
             ) : (
               <button className="btn primary" disabled aria-describedby="next-help" data-testid="next-lesson">
-                Next lesson <span aria-hidden="true">→</span>
+                {copy.workspace.nextLesson} <span aria-hidden="true">{locale === 'ar' ? '←' : '→'}</span>
               </button>
             )
           ) : status.completed ? (
             <Link className="btn primary" to="/" data-testid="next-lesson">
-              Finish course
+              {copy.workspace.finishCourse}
             </Link>
           ) : (
             <button className="btn primary" disabled aria-describedby="next-help" data-testid="next-lesson">
-              Finish course
+              {copy.workspace.finishCourse}
             </button>
           )}
           {!status.completed && (
             <span id="next-help" className="sr-only">
-              Pass every check to continue.
+              {copy.workspace.passToContinue}
             </span>
           )}
         </div>
@@ -323,14 +330,19 @@ export function Workspace({ lesson, next }: { lesson: Lesson; next: Lesson | nul
 }
 
 /** The single message shown above the preview, most fundamental problem first. */
-function describeProblem(compileFailure: Failure | null, unresponsive: 'loop' | 'start' | null, runtimeError: string | null): string | null {
+function describeProblem(
+  compileFailure: Failure | null,
+  unresponsive: 'loop' | 'start' | null,
+  runtimeError: string | null,
+  copy: UiCopy,
+): string | null {
   if (compileFailure) {
-    const where = compileFailure.line ? ` on line ${compileFailure.line}` : ''
-    return `Syntax error${where}: ${compileFailure.message}. Showing the last working preview.`
+    const where = compileFailure.line ? copy.workspace.line(compileFailure.line) : ''
+    return copy.workspace.syntaxError(where, compileFailure.message)
   }
-  if (unresponsive === 'loop') return 'The preview stopped responding. Check for a loop that never ends.'
-  if (unresponsive === 'start') return 'The preview could not start. Edit the code to try again, or reload the page.'
-  return runtimeError ? `Runtime error: ${runtimeError}` : null
+  if (unresponsive === 'loop') return copy.workspace.loopError
+  if (unresponsive === 'start') return copy.workspace.startError
+  return runtimeError ? copy.workspace.runtimeError(runtimeError) : null
 }
 
 function persistDraft(lesson: Lesson, code: string) {
