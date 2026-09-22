@@ -5,6 +5,12 @@ test('handbook runs its displayed cart and leads into the course', async ({ page
   await page.goto('./')
   await page.getByRole('link', { name: 'Handbook', exact: true }).first().click()
   await expect(page.getByRole('heading', { name: 'Handbook', exact: true })).toBeVisible()
+  await expect(page.locator('.handbook-reference details')).toHaveCount(3)
+  await expect(page.locator('.handbook-reference summary')).toHaveText([
+    'Updating objects and arrays without mutation',
+    'When the next state depends on the previous state',
+    'Updating parent state from a child',
+  ])
   await expect(preview(page).getByText('Items in cart: 0')).toBeVisible()
   await preview(page).getByRole('button', { name: 'Add to cart' }).click()
   await expect(preview(page).getByText('Items in cart: 1')).toBeVisible()
