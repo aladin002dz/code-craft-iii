@@ -1,27 +1,18 @@
 import { test, expect } from '@playwright/test'
-import { preview } from './helpers'
 
-test('handbook runs its displayed cart and leads into the course', async ({ page }) => {
+test('handbook presents a compact reference and leads into the course', async ({ page }) => {
   await page.goto('./')
   await page.getByRole('link', { name: 'Handbook', exact: true }).first().click()
   await expect(page.getByRole('heading', { name: 'Handbook', exact: true })).toBeVisible()
   await expect(page.locator('.handbook-reference details')).toHaveCount(3)
-  await expect(page.locator('.handbook-reference summary')).toHaveText([
-    'Updating objects and arrays without mutation',
-    'When the next state depends on the previous state',
-    'Updating parent state from a child',
-  ])
-  await expect(preview(page).getByText('Items in cart: 0')).toBeVisible()
-  await preview(page).getByRole('button', { name: 'Add to cart' }).click()
-  await expect(preview(page).getByText('Items in cart: 1')).toBeVisible()
-  await expect(page.getByTestId('state-count')).toContainText('1')
-  await page.getByRole('button', { name: 'Reset example' }).click()
-  await expect(preview(page).getByText('Items in cart: 0')).toBeVisible()
-  await expect(page.getByTestId('state-count')).toContainText('0')
-  await page.getByRole('button', { name: '2 items' }).click()
-  await expect(page.getByRole('status')).toContainText('Try again')
-  await page.getByRole('button', { name: '3 items' }).click()
-  await expect(page.getByRole('status')).toContainText('Exactly')
+  await expect(page.getByText('From a click to a new screen')).toHaveCount(0)
+  await expect(page.getByText('See it happen')).toHaveCount(0)
+  await expect(page.getByText('Check your understanding')).toHaveCount(0)
+  await page.locator('.handbook-reference summary').first().click()
+  await expect(page.getByText("settings.volume = 75")).toBeVisible()
+  await expect(page.getByText("tags.push('Testing')")).toBeVisible()
+  await expect(page.getByLabel('Correct object update')).toContainText('...settings')
+  await expect(page.getByLabel('Correct array update')).toContainText('...tags')
   await page.getByRole('link', { name: 'Start lesson 1' }).click()
   await expect(page).toHaveURL(/lesson\/1/)
   await page.getByRole('link', { name: 'Handbook', exact: true }).first().click()
@@ -30,14 +21,14 @@ test('handbook runs its displayed cart and leads into the course', async ({ page
   await expect(page.getByText('0 of 9 complete')).toBeVisible()
 })
 
-test('legacy introduction redirects and handbook fits a phone and supports keyboard answers', async ({ page }) => {
+test('legacy introduction redirects and handbook fits a phone with keyboard-accessible patterns', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto('./#/introduction')
-  await expect(preview(page).getByRole('button', { name: 'Add to cart' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Handbook', exact: true })).toBeVisible()
   await expect(page).toHaveURL(/handbook/)
-  const answer = page.getByRole('button', { name: '3 items' })
-  await answer.focus()
+  const firstPattern = page.locator('.handbook-reference summary').first()
+  await firstPattern.focus()
   await page.keyboard.press('Enter')
-  await expect(page.getByRole('status')).toContainText('Exactly')
+  await expect(page.locator('.handbook-reference details').first()).toHaveAttribute('open', '')
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
 })
