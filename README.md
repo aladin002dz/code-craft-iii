@@ -2,7 +2,7 @@
 
 Learn React state by building working features in a settings panel, shopping cart, and task board. The code you edit is the code you see running.
 
-**[Open the live code lab](https://mahfoudh.dev/code-craft-iii/#/lesson/1)**
+**[https://mahfoudh.dev/code-craft-iii/](https://mahfoudh.dev/code-craft-iii/)**
 
 ## How the live code lab works
 
