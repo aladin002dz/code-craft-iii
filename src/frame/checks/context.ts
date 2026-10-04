@@ -2,7 +2,9 @@
 // Checks interact the way a user would (find by visible text or label, click, type)
 // so any correct implementation passes, regardless of how it is written.
 
+import type { EffectRecord } from '../effects'
 import { readRawState } from '../inspect'
+import { realDelay, type Environment } from './environment'
 
 export class CheckFailure extends Error {}
 
@@ -34,6 +36,14 @@ export type CheckContext = {
   allState(): unknown[]
   /** Deep-freeze current state so accidental mutation throws instead of silently working. */
   freezeState(): void
+  /** Effect counts of components with this name, or of every component. */
+  effects(component?: string): EffectRecord[]
+  /** Move the check's fake clock forward; timers due in that time run. */
+  wait(ms: number): Promise<void>
+  /** Timeouts and intervals still scheduled with the fake clock. */
+  pendingTimers(): number
+  windowListeners(type: string): number
+  resizeWindow(width: number): Promise<void>
 }
 
 const clean = (value: string | null | undefined) => (value ?? '').replace(/\s+/g, ' ').trim()
@@ -53,7 +63,7 @@ function deepFreeze(value: unknown) {
   }
 }
 
-export function createCheckContext(container: HTMLElement, pendingError: () => string | null): CheckContext {
+export function createCheckContext(container: HTMLElement, pendingError: () => string | null, environment: Environment): CheckContext {
   const findAll = (selector: string) => Array.from(container.querySelectorAll<HTMLElement>(selector))
 
   const ctx: CheckContext = {
@@ -81,7 +91,7 @@ export function createCheckContext(container: HTMLElement, pendingError: () => s
     },
     text: element => clean(element?.textContent),
     async settle() {
-      await new Promise(resolve => setTimeout(resolve, 30))
+      await realDelay(30)
       const error = pendingError()
       if (error) throw new CheckFailure(`Your code threw an error: ${error}`)
     },
@@ -109,6 +119,17 @@ export function createCheckContext(container: HTMLElement, pendingError: () => s
     allState: () => readRawState().flatMap(entry => entry.values),
     freezeState() {
       readRawState().forEach(entry => entry.values.forEach(deepFreeze))
+    },
+    effects: component => readRawState().filter(entry => !component || entry.component === component).flatMap(entry => entry.effects),
+    async wait(ms) {
+      await environment.advance(ms)
+      await ctx.settle()
+    },
+    pendingTimers: () => environment.pendingTimers(),
+    windowListeners: type => environment.windowListeners(type),
+    async resizeWindow(width) {
+      environment.resizeWindow(width)
+      await ctx.settle()
     },
   }
   return ctx

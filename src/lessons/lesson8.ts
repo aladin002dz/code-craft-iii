@@ -3,6 +3,7 @@ import type { Lesson } from './types'
 
 export const lesson8: Lesson = {
   id: 8,
+  course: 'state',
   topic: 'Derived state',
   title: 'Calculate the subtotal',
   project: 'Shopping cart',

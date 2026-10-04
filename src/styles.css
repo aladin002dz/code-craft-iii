@@ -115,17 +115,36 @@ code {
 }
 
 .brand {
+  display: inline-flex;
   flex-shrink: 0;
-  font-size: 19px;
-  font-weight: 800;
-  letter-spacing: -0.01em;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink);
   text-decoration: none;
   padding-inline-end: 20px;
   border-inline-end: 1px solid var(--line);
   line-height: 32px;
 }
 
-.brand span {
+.brand-mark {
+  flex: none;
+  border-radius: 8px;
+  box-shadow: 0 1px 2px rgb(20 32 58 / 18%), 0 4px 10px rgb(31 95 214 / 14%);
+  transition: transform 0.2s ease-out;
+}
+
+.brand:hover .brand-mark {
+  transform: rotate(-6deg) scale(1.04);
+}
+
+.brand-name {
+  font-size: 19px;
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  direction: ltr;
+}
+
+.brand-accent {
   color: var(--accent);
 }
 
@@ -1157,11 +1176,16 @@ a.lesson-card:hover {
   }
 
   .brand {
+    gap: 8px;
     padding-inline-end: 12px;
-    font-size: 17px;
   }
 
-  .crumbs span:first-child:not(:last-child),
+  .brand-mark {
+    width: 26px;
+    height: 26px;
+  }
+
+  .crumbs > :first-child:not(:last-child),
   .crumb-sep {
     display: none;
   }
@@ -1213,8 +1237,8 @@ a.lesson-card:hover {
     font-size: 12px;
   }
 
-  .brand {
-    font-size: 14px;
+  .brand-name {
+    font-size: 15px;
   }
 
   .lesson-card {
@@ -1433,3 +1457,75 @@ a.lesson-card:hover {
 .handbook-reference .pattern-example { margin: 0 24px 20px; padding: 20px; overflow-x: auto; border-radius: 8px; background: var(--code-bg); color: var(--code-text); font: 13px/1.7 var(--font-mono); }
 .handbook-reference .pattern-example code { background: none; color: inherit; padding: 0; font: inherit; }
 @media (max-width: 760px) { .handbook-reference .pattern-example { margin-inline: 16px; padding: 16px; } }
+
+/* ───────── Home: every course ───────── */
+
+.app-header .language-picker:last-child { margin-inline-start: auto; }
+.crumb-link { color: var(--ink); text-decoration: none; overflow: hidden; text-overflow: ellipsis; }
+.crumb-link:hover { color: var(--accent); }
+
+.home { width: min(100% - 64px, 1080px); margin: 0 auto; padding: 56px 0; display: grid; gap: 32px; }
+.home-intro { display: grid; gap: 14px; max-width: 70ch; }
+.home-intro h1 { font-size: clamp(28px, 4vw, 40px); line-height: 1.12; letter-spacing: -0.03em; }
+.home-intro p { color: var(--ink-soft); }
+.course-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; padding: 0; list-style: none; }
+.course-card { display: grid; align-content: start; gap: 10px; padding: 24px; border: 1px solid var(--line); border-top: 4px solid var(--accent); border-radius: 16px; background: var(--surface); box-shadow: var(--shadow); }
+.course-card[data-course='effects'] { border-top-color: #0f7d74; }
+.course-card[data-course='effects'] .eyebrow { color: #0f7d74; }
+.course-card-head { display: flex; align-items: center; justify-content: space-between; min-height: 24px; }
+.course-index { color: var(--ink-soft); font: 700 13px/1 var(--font-mono); }
+.course-badge { padding: 4px 10px; border-radius: 99px; background: var(--accent-tint); color: var(--accent); font-size: 12px; font-weight: 700; }
+.course-card h2 { font-size: clamp(22px, 2.6vw, 28px); letter-spacing: -0.025em; }
+.course-card p { color: var(--ink-soft); }
+.course-meta { display: flex; flex-wrap: wrap; gap: 6px 16px; color: var(--ink-soft); font-size: 13px; font-weight: 600; }
+.course-meter { height: 6px; overflow: hidden; border-radius: 99px; background: var(--surface-muted); }
+.course-meter > span { display: block; height: 100%; border-radius: inherit; background: var(--good); transition: width 0.4s ease-out; }
+.course-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+.btn.ghost { border-color: transparent; background: transparent; color: var(--ink-soft); }
+.home .course-footer { grid-column: auto; }
+.back-link { display: inline-flex; gap: 6px; color: var(--ink-soft); font-size: 13px; font-weight: 650; text-decoration: none; }
+.back-link:hover { color: var(--accent); }
+
+@media (max-width: 899px) {
+  .home { width: min(100% - 32px, 640px); padding-block: 28px; gap: 24px; }
+  .course-list { grid-template-columns: minmax(0, 1fr); }
+  .course-card { padding: 20px; }
+}
+
+/* Supplied project files in the Files tab. */
+.file-description { flex-basis: 100%; color: var(--ink-soft); font-size: 12px; line-height: 1.4; }
+
+/* Effects in the inspector. */
+.effect-row { flex-wrap: wrap; }
+.effect-name { color: #b9a6ff; }
+.effect-counts { display: inline-flex; flex-wrap: wrap; gap: 4px 10px; padding: 0 4px; border-radius: 4px; color: var(--code-text); font-size: 13px; }
+.effect-counts.flash { animation: value-flash 0.9s ease-out; }
+.effect-deps { color: var(--code-muted); }
+
+/* Effects handbook visuals. */
+.effect-timeline { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; min-height: 112px; align-items: center; margin: 0 0 16px; padding: 16px; border-radius: 10px; background: var(--accent-tint); list-style: none; counter-reset: step; }
+.effect-timeline li { position: relative; padding: 10px 6px; border: 1px solid var(--line); border-radius: 8px; background: var(--surface); font-size: 12px; font-weight: 650; text-align: center; }
+.effect-timeline li.effect-step { border-color: #0f7d74; background: #e4f4f1; color: #0b5d56; }
+.effect-timeline li.cleanup-step { border-style: dashed; border-color: var(--bad); background: var(--bad-tint); color: var(--bad); }
+.deps-title { margin-top: 18px; }
+.deps-table { display: grid; gap: 6px; margin: 0; }
+.deps-table > div { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 12px; align-items: baseline; padding: 8px 12px; border-radius: 8px; background: var(--surface-muted); }
+.deps-table dt { font-weight: 700; }
+.deps-table dd { margin: 0; color: var(--ink-soft); font-size: 13px; }
+
+@media (max-width: 760px) {
+  .effect-timeline { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .effect-timeline li:last-child { grid-column: 1 / -1; }
+}
+
+/* Syntax colours shared by the editor and read-only snippets (see ui/codeHighlight.tsx). */
+.tok-keyword { color: #f28fb5; }
+.tok-string { color: #98e0a8; }
+.tok-literal { color: #ffc27a; }
+.tok-function { color: #f5d77e; }
+.tok-definition,
+.tok-property { color: #8fd0ff; }
+.tok-tag { color: #f28f9b; }
+.tok-attribute { color: #ffcf85; }
+.tok-comment { color: #7d8fae; font-style: italic; }
+.tok-punctuation { color: #b9c7de; }

@@ -6,8 +6,11 @@ export const CHANNEL = 'state-quest'
 
 export type JsonValue = null | boolean | number | string | JsonValue[] | { [key: string]: JsonValue }
 
-/** State hooks (useState/useReducer) of one rendered component instance, in call order. */
-export type ComponentState = { component: string; key: string | null; values: JsonValue[] }
+/** How often one useEffect has set up and cleaned up, and the dependencies of its latest run (null: no array). */
+export type EffectSnapshot = { runs: number; cleanups: number; deps: JsonValue[] | null }
+
+/** State hooks (useState/useReducer) and effects of one rendered component instance, in call order. */
+export type ComponentState = { component: string; key: string | null; values: JsonValue[]; effects?: EffectSnapshot[] }
 export type StateSnapshot = ComponentState[]
 
 export type CheckOutcome = { id: string; passed: boolean; message: string | null }
@@ -45,6 +48,22 @@ function isJsonValue(value: unknown, depth = 0): value is JsonValue {
   return false
 }
 
+const isCount = (value: unknown) => Number.isInteger(value) && (value as number) >= 0
+
+function isEffects(value: unknown): boolean {
+  return (
+    Array.isArray(value) &&
+    value.length <= 50 &&
+    value.every(
+      effect =>
+        isRecord(effect) &&
+        isCount(effect.runs) &&
+        isCount(effect.cleanups) &&
+        (effect.deps === null || (Array.isArray(effect.deps) && effect.deps.length <= 50 && effect.deps.every(dep => isJsonValue(dep)))),
+    )
+  )
+}
+
 function isSnapshot(value: unknown): value is StateSnapshot {
   return (
     Array.isArray(value) &&
@@ -56,7 +75,8 @@ function isSnapshot(value: unknown): value is StateSnapshot {
         (entry.key === null || isText(entry.key, 200)) &&
         Array.isArray(entry.values) &&
         entry.values.length <= MAX_ITEMS &&
-        entry.values.every(item => isJsonValue(item)),
+        entry.values.every(item => isJsonValue(item)) &&
+        (entry.effects === undefined || isEffects(entry.effects)),
     )
   )
 }

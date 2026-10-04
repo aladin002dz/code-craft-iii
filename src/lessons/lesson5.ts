@@ -3,6 +3,7 @@ import type { Lesson } from './types'
 
 export const lesson5: Lesson = {
   id: 5,
+  course: 'state',
   topic: 'One source of truth',
   title: 'Keep two controls in sync',
   project: 'Settings panel',

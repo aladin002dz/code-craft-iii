@@ -3,6 +3,7 @@ import type { Lesson } from './types'
 
 export const lesson3: Lesson = {
   id: 3,
+  course: 'state',
   topic: 'Updates and previous state',
   title: 'Fix the Add 3 action',
   project: 'Shopping cart',

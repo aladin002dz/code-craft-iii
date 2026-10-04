@@ -118,6 +118,13 @@ export function Sidebar({ lesson, tab, onTab, collapsed, canCollapse, onToggleCo
               <span className="file-name">{lesson.filename}</span>
               <span className="file-badge">{copy.sidebar.editThis}</span>
             </li>
+            {lesson.supplied?.map(file => (
+              <li className="file" key={file.filename}>
+                <span className="file-name">{file.filename}</span>
+                <span className="file-badge muted-badge">{copy.sidebar.supplied}</span>
+                <span className="file-description">{file.description}</span>
+              </li>
+            ))}
             <li className="file">
               <span className="file-name">styles.css</span>
               <span className="file-badge muted-badge">{copy.sidebar.supplied}</span>

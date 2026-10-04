@@ -218,3 +218,179 @@ select {
   color: #6a778d;
   font-size: 13px;
 }
+
+/* Effects course projects. */
+.display-name {
+  flex: 1;
+  font-size: 18px;
+}
+
+.chat .messages {
+  height: 168px;
+  margin: 14px 0 0;
+  padding: 0 4px 0 0;
+  overflow-y: auto;
+  list-style: none;
+  border-block: 1px solid #e1e6f0;
+}
+
+.chat .messages li {
+  padding: 8px 0;
+  border-top: 1px solid #eef1f6;
+}
+
+.chat .messages li:first-child {
+  border-top: 0;
+}
+
+.clock {
+  display: block;
+  margin: 8px 0 4px;
+  font: 700 48px/1.1 ui-monospace, 'Cascadia Code', Consolas, monospace;
+  letter-spacing: -0.02em;
+  color: #18253e;
+}
+
+.link-button {
+  margin-top: 16px;
+  padding: 0;
+  background: none;
+  color: #1d5fd8;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.link-button:hover {
+  background: none;
+}
+
+.members {
+  margin-top: 14px;
+}
+
+.members ul {
+  margin: 8px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.members li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-top: 1px solid #e1e6f0;
+}
+
+.members .member-name {
+  flex: 1;
+  font-weight: 600;
+}
+
+.members.compact li {
+  display: inline-flex;
+  margin-inline-end: 12px;
+  border-top: 0;
+}
+
+.avatar {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #e6eefb;
+  color: #1e4f9f;
+  font-weight: 700;
+}
+
+.layout {
+  display: block;
+}
+
+.field.inline {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.room-title {
+  margin: 18px 0 0;
+  font-size: 18px;
+}
+
+.connection-log {
+  margin-top: 18px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #0e1a30;
+  color: #dbe6f7;
+  font: 12px/1.6 ui-monospace, 'Cascadia Code', Consolas, monospace;
+}
+
+.connection-log .log-head {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 6px;
+  color: #8a9bb8;
+}
+
+.connection-log .log-head strong {
+  color: #ffc27a;
+}
+
+.connection-log ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.connection-log li.disconnect {
+  color: #f2a6c4;
+}
+
+.profile {
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid #e1e6f0;
+  border-radius: 12px;
+}
+
+.profile h3 {
+  margin: 0 0 4px;
+}
+
+.profile p {
+  margin: 0;
+}
+
+.profile-loading {
+  margin: 16px 0 0;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.task-list .title.done {
+  color: #8896ad;
+  text-decoration: line-through;
+}
+
+.member-list {
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.member-list li {
+  padding: 8px 0;
+  border-top: 1px solid #e1e6f0;
+}
+
+.network-log li.pending {
+  color: #8a9bb8;
+}

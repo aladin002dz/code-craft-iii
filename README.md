@@ -1,6 +1,6 @@
-# State Quest
+# Code Craft
 
-Learn React state by building working features in a settings panel, shopping cart, and task board. The code you edit is the code you see running.
+Learn React state and effects by building working features in small, realistic projects. The code you edit is the code you see running.
 
 **[https://mahfoudh.dev/code-craft-iii/](https://mahfoudh.dev/code-craft-iii/)**
 
@@ -25,7 +25,7 @@ flowchart TB
     Editor[Code editor] --> Compile[Compile JSX]
     Compile --> Preview[Visible iframe: React preview]
     Compile --> Checks[Hidden iframe: behavior checks]
-    Preview -->|state updates| Inspector[State inspector]
+    Preview -->|state and effect updates| Inspector[State inspector]
     Checks -->|results| Progress[Objectives and progress]
 ```
 
@@ -52,13 +52,20 @@ The preview and checks run your compiled code in separate sandboxed iframes. An 
 
 React, the frame runtime, checks, and styles are bundled into the iframe's inline document. Messages are validated by sender, format, and a per-frame token. Loop guards and timeouts help the lab recover from unresponsive code.
 
+For the effects course, the frame's `react` module wraps `useEffect` to count each effect's runs and cleanups for the inspector; React still decides when effects run. Checks run with a fake clock and tracked window listeners, so timer and subscription behaviour is tested instantly. Because the sandbox has no network access, `fetch('/api/...')` is answered by a supplied pretend server (`./network.js`, with a visible network log), and a supplied chat server (`./chat.js`) stands in for a real connection.
+
 See [Workspace](src/ui/Workspace.tsx), [PreviewController](src/runtime/PreviewController.ts), [the compiler](src/runtime/compile.ts), and [the frame runtime](src/frame/runtime.ts).
 
 </details>
 
-## Curriculum
+## Courses
 
-Nine lessons use the three mini-projects to teach state changes, `useState`, functional updates, props, one source of truth, immutable updates, lifting state, derived state, and state preservation.
+The home page lists both courses. Each has its own course map, handbook, and progress.
+
+| Course | Lessons | Topics |
+| --- | --- | --- |
+| React state | 9 | State changes, `useState`, functional updates, props, one source of truth, immutable updates, lifting state, derived state, and state preservation, in a settings panel, shopping cart, and task board. |
+| Effects with `useEffect` | 7 | Ordered from the most common use of effects: fetching data on load, refetching when a value changes (with stale-response cleanup), browser events, timers, external connections, DOM work, and when not to use an effect, in a team chat, focus timer, and task board. |
 
 ## Run locally
 
