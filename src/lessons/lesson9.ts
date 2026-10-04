@@ -3,6 +3,7 @@ import type { Lesson } from './types'
 
 export const lesson9: Lesson = {
   id: 9,
+  course: 'state',
   topic: 'Resetting and preserving state',
   title: 'Preserve or reset on purpose',
   project: 'Task board',

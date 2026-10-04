@@ -36,6 +36,8 @@ window.addEventListener('unhandledrejection', event => {
 })
 
 onCommit(() => {
+  // Checks fake the timers and render throwaway copies; only the preview's state is published.
+  if (checking) return
   // Wait for the commit to settle, then publish only if the values changed.
   setTimeout(() => {
     const snapshot = readSnapshot()

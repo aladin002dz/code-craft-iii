@@ -25,8 +25,8 @@ describe('saved work', () => {
   })
 
   it('drops invalid lesson ids and oversized drafts', () => {
-    expect(parseProgress({ completed: [2, 1, 2, 0, 10, '3'] })).toEqual({ completed: [1, 2] })
-    expect(parseDrafts({ 1: 'valid', 2: 'x'.repeat(50_001), 10: 'wrong id' })).toEqual({ 1: 'valid' })
+    expect(parseProgress({ completed: [2, 1, 2, 0, 16, 17, '3'] })).toEqual({ completed: [1, 2, 16] })
+    expect(parseDrafts({ 1: 'valid', 2: 'x'.repeat(50_001), 12: 'effects', 17: 'wrong id' })).toEqual({ 1: 'valid', 12: 'effects' })
     expect(parsePreferences({ sidebarCollapsed: 'yes' })).toEqual({ sidebarCollapsed: false, locale: 'en' })
     expect(parsePreferences({ sidebarCollapsed: true, locale: 'ar' })).toEqual({ sidebarCollapsed: true, locale: 'ar' })
   })
@@ -53,6 +53,14 @@ describe('preview message validation', () => {
     expect(parseFrameMessage({ channel: CHANNEL, kind: 'checks', token: 'x', results: [{ id: 'a', passed: 'yes', message: null }] })).toBeNull()
     expect(parseFrameMessage({ channel: CHANNEL, kind: 'runtime-error', token: 'x', message: 'x'.repeat(2001) })).toBeNull()
     expect(parseFrameMessage({ channel: CHANNEL, kind: 'rendered', token: 'x' })).toEqual({ channel: CHANNEL, kind: 'rendered', token: 'x' })
+  })
+
+  it('accepts effect counts only when they are well formed', () => {
+    const state = (effects: unknown) => parseFrameMessage({ channel: CHANNEL, kind: 'state', token: 'x', snapshot: [{ component: 'A', key: null, values: [], effects }] })
+    expect(state([{ runs: 2, cleanups: 1, deps: ['general'] }, { runs: 1, cleanups: 0, deps: null }])).toMatchObject({ kind: 'state' })
+    expect(state([{ runs: -1, cleanups: 0, deps: null }])).toBeNull()
+    expect(state([{ runs: 1, cleanups: 0, deps: 'roomId' }])).toBeNull()
+    expect(state([{ runs: 1.5, cleanups: 0, deps: [] }])).toBeNull()
   })
 
   it('validates messages sent into the sandbox', () => {

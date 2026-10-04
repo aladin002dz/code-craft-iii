@@ -7,7 +7,7 @@ describe('tutorial localization', () => {
   it('provides complete French and Arabic curriculum overlays without changing learner code', () => {
     for (const locale of ['fr', 'ar'] as const) {
       const localized = localizeLessons(lessons, locale)
-      expect(localized).toHaveLength(9)
+      expect(localized).toHaveLength(16)
       expect(localized.map(lesson => lesson.id)).toEqual(lessons.map(lesson => lesson.id))
       localized.forEach((lesson, index) => {
         expect(lesson.title).not.toBe(lessons[index].title)
@@ -15,6 +15,8 @@ describe('tutorial localization', () => {
         expect(lesson.objectives.map(item => item.id)).toEqual(lessons[index].objectives.map(item => item.id))
         expect(lesson.starter).toBe(lessons[index].starter)
         expect(lesson.focus).toBe(lessons[index].focus)
+        expect(lesson.supplied?.map(file => file.filename)).toEqual(lessons[index].supplied?.map(file => file.filename))
+        expect(lesson.prediction?.options.length).toBe(lessons[index].prediction?.options.length)
       })
     }
   })

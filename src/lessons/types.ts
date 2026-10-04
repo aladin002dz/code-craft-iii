@@ -1,5 +1,14 @@
 export type ProjectName = string
 
+export type CourseId = 'state' | 'effects'
+
+/** A project file the lesson provides read-only, such as a pretend server the learner's code talks to. */
+export type SuppliedFile = {
+  filename: string
+  /** What the file offers, in one sentence. */
+  description: string
+}
+
 export type Objective = {
   /** Matches the id of a check in src/frame/checks. */
   id: string
@@ -17,7 +26,9 @@ export type Prediction = {
 }
 
 export type Lesson = {
+  /** Unique across every course; used in links, progress and drafts. */
   id: number
+  course: CourseId
   topic: string
   title: string
   project: ProjectName
@@ -33,6 +44,8 @@ export type Lesson = {
   hints: string[]
   prediction?: Prediction
   filename: string
+  /** Supplied modules the starter imports, besides the shared styles. */
+  supplied?: SuppliedFile[]
   starter: string
   /** Lines to draw attention to: `edit` is where the learner works, `related` is code that reacts to it. */
   focus: { edit: RegExp[]; related?: RegExp[] }

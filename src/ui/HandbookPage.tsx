@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { useI18n } from '../i18n/I18nProvider'
+import { Code } from './codeHighlight'
 
 function StateBasics() {
   const { copy } = useI18n()
@@ -18,7 +19,7 @@ function StateBasics() {
         </article>
         <article className="state-anatomy-card">
           <span className="concept-label">{copy.handbook.anatomy}</span>
-          <pre><code>const [count, setCount] = useState(0)</code></pre>
+          <pre><Code>{'const [count, setCount] = useState(0)'}</Code></pre>
           <dl className="state-parts">
             <div><dt><code>count</code></dt><dd>{copy.handbook.currentValue}</dd></div>
             <div><dt><code>setCount</code></dt><dd>{copy.handbook.requestsUpdate}</dd></div>
@@ -48,31 +49,31 @@ export function HandbookPage() {
             <div className="copy-examples">
               <article>
                 <span className="concept-label">{copy.handbook.object}</span>
-                <div className="mutation-example bad"><span>{copy.handbook.dont}</span><code>settings.volume = 75</code></div>
-                <div className="mutation-example good"><span>{copy.handbook.do}</span><pre tabIndex={0} aria-label={copy.handbook.correctObject}><code>{"setSettings({\n  ...settings,\n  volume: 75\n})"}</code></pre></div>
+                <div className="mutation-example bad"><span>{copy.handbook.dont}</span><Code>{'settings.volume = 75'}</Code></div>
+                <div className="mutation-example good"><span>{copy.handbook.do}</span><pre tabIndex={0} aria-label={copy.handbook.correctObject}><Code>{"setSettings({\n  ...settings,\n  volume: 75\n})"}</Code></pre></div>
               </article>
               <article>
                 <span className="concept-label">{copy.handbook.array}</span>
-                <div className="mutation-example bad"><span>{copy.handbook.dont}</span><code>tags.push('Testing')</code></div>
-                <div className="mutation-example good"><span>{copy.handbook.do}</span><pre tabIndex={0} aria-label={copy.handbook.correctArray}><code>{"setTags([\n  ...tags,\n  'Testing'\n])"}</code></pre></div>
+                <div className="mutation-example bad"><span>{copy.handbook.dont}</span><Code>{"tags.push('Testing')"}</Code></div>
+                <div className="mutation-example good"><span>{copy.handbook.do}</span><pre tabIndex={0} aria-label={copy.handbook.correctArray}><Code>{"setTags([\n  ...tags,\n  'Testing'\n])"}</Code></pre></div>
               </article>
             </div>
           </details>
           <details><summary><span className="pattern-number">02</span><span>{copy.handbook.previousTitle}</span></summary>
             <p className="pattern-rule">{copy.handbook.previousRule}</p>
-            <pre className="pattern-example" tabIndex={0} aria-label={copy.handbook.codeExample}><code>{"function AddThree() {\n  const [count, setCount] = useState(0)\n\n  function handleClick() {\n    setCount(current => current + 1)\n    setCount(current => current + 1)\n    setCount(current => current + 1)\n  }\n\n  return <button onClick={handleClick}>Count: {count}</button>\n}"}</code></pre>
+            <pre className="pattern-example" tabIndex={0} aria-label={copy.handbook.codeExample}><Code>{"function AddThree() {\n  const [count, setCount] = useState(0)\n\n  function handleClick() {\n    setCount(current => current + 1)\n    setCount(current => current + 1)\n    setCount(current => current + 1)\n  }\n\n  return <button onClick={handleClick}>Count: {count}</button>\n}"}</Code></pre>
             <div className="pattern-flow value-flow" dir="ltr" aria-label={copy.handbook.queuedValues}><span>0</span><b>→</b><span>1</span><b>→</b><span>2</span><b>→</b><span>3</span></div>
           </details>
           <details><summary><span className="pattern-number">03</span><span>{copy.handbook.parentTitle}</span></summary>
             <p className="pattern-rule">{copy.handbook.parentRule}</p>
-            <pre className="pattern-example" tabIndex={0} aria-label={copy.handbook.codeExample}><code>{"function Settings() {\n  const [volume, setVolume] = useState(50)\n\n  return (\n    <>\n      <VolumeSlider\n        volume={volume}\n        onVolumeChange={setVolume}\n      />\n      <p>Volume: {volume}%</p>\n    </>\n  )\n}\n\nfunction VolumeSlider({ volume, onVolumeChange }) {\n  return (\n    <input type=\"range\" min=\"0\" max=\"100\" value={volume}\n      onChange={event => onVolumeChange(Number(event.target.value))} />\n  )\n}"}</code></pre>
+            <pre className="pattern-example" tabIndex={0} aria-label={copy.handbook.codeExample}><Code>{"function Settings() {\n  const [volume, setVolume] = useState(50)\n\n  return (\n    <>\n      <VolumeSlider\n        volume={volume}\n        onVolumeChange={setVolume}\n      />\n      <p>Volume: {volume}%</p>\n    </>\n  )\n}\n\nfunction VolumeSlider({ volume, onVolumeChange }) {\n  return (\n    <input type=\"range\" min=\"0\" max=\"100\" value={volume}\n      onChange={event => onVolumeChange(Number(event.target.value))} />\n  )\n}"}</Code></pre>
             <div className="pattern-flow parent-flow" aria-label={copy.handbook.parentFlow}><span>{copy.handbook.parentState}</span><b>{copy.handbook.valueDown}</b><span>{copy.handbook.child}</span><b>{copy.handbook.callbackUp}</b></div>
           </details>
         </div>
       </section>
       <nav className="intro-actions handbook-footer" aria-label={copy.handbook.continueLabel}>
         <Link className="btn primary" to="/lesson/$lessonId" params={{ lessonId: '1' }}>{copy.handbook.startLesson} {locale === 'ar' ? '←' : '→'}</Link>
-        <Link className="btn" to="/">{copy.handbook.back}</Link>
+        <Link className="btn" to="/course/$courseId" params={{ courseId: 'state' }}>{copy.handbook.back}</Link>
       </nav>
     </article>
   )

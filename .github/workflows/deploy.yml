@@ -1,4 +1,4 @@
-name: Verify and deploy State Quest
+name: Verify and deploy Code Craft
 
 on:
   push:

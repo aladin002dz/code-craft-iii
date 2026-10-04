@@ -2,17 +2,20 @@
 import * as React from 'react'
 import * as jsxRuntime from 'react/jsx-runtime'
 import { createRoot, type Root } from 'react-dom/client'
+import { learnerReact } from './effects'
 import { watchContainer } from './inspect'
+import { resetSupplied, suppliedModules } from './supplied'
 
 const modules: Record<string, unknown> = {
-  react: React,
+  react: learnerReact,
   'react/jsx-runtime': jsxRuntime,
   'react-dom/client': { createRoot },
+  ...suppliedModules,
 }
 
 function requireModule(name: string) {
   if (name in modules) return modules[name]
-  throw new Error(`Cannot import "${name}". These lessons only use "react".`)
+  throw new Error(`Cannot import "${name}". These lessons only use "react" and the supplied project files.`)
 }
 
 /** Evaluate compiled learner code and return its default export. Frame-only: never call from the app. */
@@ -45,6 +48,7 @@ export type Mounted = {
 export function mountComponent(container: HTMLElement, Component: React.ComponentType, onError: (error: unknown) => void): Mounted {
   let root: Root | null = null
   const start = () => {
+    resetSupplied()
     container.replaceChildren()
     watchContainer(container)
     root = createRoot(container, { onCaughtError: onError, onUncaughtError: onError })

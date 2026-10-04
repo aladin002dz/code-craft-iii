@@ -3,6 +3,7 @@ import type { Lesson } from './types'
 
 export const lesson2: Lesson = {
   id: 2,
+  course: 'state',
   topic: 'useState and setters',
   title: 'Add quantity controls',
   project: 'Shopping cart',

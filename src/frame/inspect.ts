@@ -5,6 +5,7 @@
 // hooks of the components we rendered. This shows what React actually holds, not
 // what the component chooses to display.
 
+import { isEffectRecord, onEffectActivity, type EffectRecord } from './effects'
 import type { ComponentState, JsonValue, StateSnapshot } from './protocol'
 
 type Hook = { memoizedState: unknown; queue: { dispatch?: unknown } | null; next: Hook | null }
@@ -35,6 +36,11 @@ export function onCommit(listener: () => void) {
   listeners.add(listener)
   return () => listeners.delete(listener)
 }
+
+// Effects run after a commit and do not commit themselves; report them the same way.
+onEffectActivity(() => {
+  if (watchedRoot) listeners.forEach(listener => listener())
+})
 
 export function handleCommit(root: FiberRoot) {
   if (root.containerInfo !== watchedContainer) return
@@ -67,30 +73,47 @@ export function toJson(value: unknown, depth = 0): JsonValue {
   return String(value)
 }
 
-function visit(fiber: Fiber | null, found: { fiber: Fiber; hooks: unknown[] }[]) {
+type Found = { fiber: Fiber; hooks: unknown[]; effects: EffectRecord[] }
+
+function visit(fiber: Fiber | null, found: Found[]) {
   for (let current = fiber; current; current = current.sibling) {
     if (FUNCTION_TAGS.has(current.tag)) {
       const hooks: unknown[] = []
+      const effects: EffectRecord[] = []
       for (let hook = current.memoizedState; hook; hook = hook.next) {
         // useState and useReducer own an update queue; refs, memos and effects do not.
         if (hook.queue && typeof hook.queue.dispatch === 'function') hooks.push(hook.memoizedState)
+        // The useEffect wrapper keeps its counts in a ref (see effects.ts).
+        const ref = hook.memoizedState as { current?: unknown } | null
+        if (!hook.queue && ref && typeof ref === 'object' && isEffectRecord(ref.current)) effects.push(ref.current)
       }
-      if (hooks.length > 0) found.push({ fiber: current, hooks })
+      if (hooks.length > 0 || effects.length > 0) found.push({ fiber: current, hooks, effects })
     }
     visit(current.child, found)
   }
 }
 
+export type RawComponentState = { component: string; key: string | null; values: unknown[]; effects: EffectRecord[] }
+
 /** Raw (unserialised) state values, used by checks so they can inspect and freeze real objects. */
-export function readRawState(): { component: string; key: string | null; values: unknown[] }[] {
+export function readRawState(): RawComponentState[] {
   if (!watchedRoot) return []
-  const found: { fiber: Fiber; hooks: unknown[] }[] = []
+  const found: Found[] = []
   visit(watchedRoot.current.child, found)
-  return found.map(({ fiber, hooks }) => ({ component: componentName(fiber.type), key: fiber.key, values: hooks }))
+  return found.map(({ fiber, hooks, effects }) => ({ component: componentName(fiber.type), key: fiber.key, values: hooks, effects }))
 }
 
 export function readSnapshot(): StateSnapshot {
   return readRawState().map(
-    (entry): ComponentState => ({ component: entry.component, key: entry.key, values: entry.values.map(v => toJson(v)) }),
+    (entry): ComponentState => ({
+      component: entry.component,
+      key: entry.key,
+      values: entry.values.map(v => toJson(v)),
+      effects: entry.effects.map(effect => ({
+        runs: effect.runs,
+        cleanups: effect.cleanups,
+        deps: effect.deps ? effect.deps.map(dep => toJson(dep)) : null,
+      })),
+    }),
   )
 }

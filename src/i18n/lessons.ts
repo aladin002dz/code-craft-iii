@@ -1,9 +1,6 @@
-import type { Lesson, Prediction } from '../lessons/types'
+import type { Lesson } from '../lessons/types'
 import type { Locale } from '../state/stores'
-
-type LessonTranslation = Pick<Lesson, 'topic' | 'title' | 'project' | 'request' | 'steps' | 'concept' | 'objectives' | 'hints'> & {
-  prediction?: Prediction
-}
+import { effectsAr, effectsFr, type LessonTranslation } from './effectsLessons'
 
 const fr: Record<number, LessonTranslation> = {
   1: {
@@ -159,8 +156,9 @@ const ar: Record<number, LessonTranslation> = {
 
 export function localizeLesson(lesson: Lesson, locale: Locale): Lesson {
   if (locale === 'en') return lesson
-  const translation = (locale === 'fr' ? fr : ar)[lesson.id]
-  return { ...lesson, ...translation, prediction: translation.prediction ?? lesson.prediction }
+  const translation = (locale === 'fr' ? { ...fr, ...effectsFr } : { ...ar, ...effectsAr })[lesson.id]
+  if (!translation) return lesson
+  return { ...lesson, ...translation, prediction: translation.prediction ?? lesson.prediction, supplied: translation.supplied ?? lesson.supplied }
 }
 
 export function localizeLessons(lessons: Lesson[], locale: Locale): Lesson[] {

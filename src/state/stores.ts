@@ -1,7 +1,8 @@
 import { useSyncExternalStore } from 'react'
 import { createStore, isRecord, type Store } from './storage'
 
-export const LESSON_COUNT = 9
+// Lesson ids are unique across courses: 1–9 teach state, 10–16 teach effects.
+export const LESSON_COUNT = 16
 const MAX_DRAFT_LENGTH = 50_000
 
 const isLessonId = (value: unknown): value is number => Number.isInteger(value) && (value as number) >= 1 && (value as number) <= LESSON_COUNT

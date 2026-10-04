@@ -16,7 +16,10 @@ export function Inspector({ groups, running }: Props) {
   const { copy } = useI18n()
   const previous = useRef(new Map<string, string>())
 
-  const rendered = groups.flatMap(group => group.rows.map(row => [row.id, formatValue(row.value)] as const))
+  const rendered = groups.flatMap(group => [
+    ...group.rows.map(row => [row.id, formatValue(row.value)] as const),
+    ...group.effects.map(effect => [effect.id, `${effect.runs}/${effect.cleanups}`] as const),
+  ])
   useEffect(() => {
     previous.current = new Map(rendered)
   })
@@ -48,6 +51,24 @@ export function Inspector({ groups, running }: Props) {
                     <pre key={changed ? `${row.id}:${text}` : row.id} className={`state-value ${valueClass(row.value)}${changed ? ' flash' : ''}`}>
                       {text}
                     </pre>
+                  </div>
+                )
+              })}
+              {group.effects.map(effect => {
+                const text = `${effect.runs}/${effect.cleanups}`
+                const before = previous.current.get(effect.id)
+                const changed = before !== undefined && before !== text
+                return (
+                  <div className="inspector-row effect-row" key={effect.id} data-testid={`effect-${effect.index}`}>
+                    <span className="state-name effect-name">{copy.inspector.effect(effect.index)}</span>
+                    <span className="state-colon">:</span>
+                    <span key={changed ? `${effect.id}:${text}` : effect.id} className={`effect-counts${changed ? ' flash' : ''}`}>
+                      <span>{copy.inspector.runs(effect.runs)}</span>
+                      <span>{copy.inspector.cleanups(effect.cleanups)}</span>
+                      <span className="effect-deps" dir="ltr">
+                        {copy.inspector.depsLabel} {effect.deps ? formatValue(effect.deps) : copy.inspector.everyRender}
+                      </span>
+                    </span>
                   </div>
                 )
               })}

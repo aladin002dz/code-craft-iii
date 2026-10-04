@@ -307,7 +307,7 @@ export function Workspace({ lesson, next }: { lesson: Lesson; next: Lesson | nul
               </button>
             )
           ) : status.completed ? (
-            <Link className="btn primary" to="/" data-testid="next-lesson">
+            <Link className="btn primary" to="/course/$courseId" params={{ courseId: lesson.course }} data-testid="next-lesson">
               {copy.workspace.finishCourse}
             </Link>
           ) : (

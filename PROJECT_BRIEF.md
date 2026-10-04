@@ -1,10 +1,10 @@
-# State Quest — product and implementation brief
+# Code Craft — product and implementation brief
 
 ## Purpose and status
 
 Build a browser game that teaches React state through practical application features, editable code, live previews, and short interactive challenges.
 
-State Quest is the working name. The user prefers the latest code-editor-and-preview design concept. Earlier fantasy islands, mascots, and lamp-room concepts were rejected as too childish and too far from real projects.
+The product is named Code Craft (renamed by the user from the working name State Quest). Its logo is code brackets around a cut gem beside a “CodeCraft” wordmark with “Craft” in the accent blue; the same mark is the favicon. Internal identifiers such as the `state-quest:` storage keys keep the old name so saved progress and drafts survive. The user prefers the latest code-editor-and-preview design concept. Earlier fantasy islands, mascots, and lamp-room concepts were rejected as too childish and too far from real projects.
 
 This brief records the design review and implementation direction. The application now has a working editor, sandboxed preview, state inspector, behavior checks, and nine lesson definitions. Generated mockups are visual references, not specifications for exact code, copy, lesson titles, or completion states; some details in them were inconsistent.
 
@@ -40,6 +40,28 @@ Retain these nine topics in order. Feature names below are implementation propos
 Teaching accuracy matters: explain that each render sees a state snapshot; do not present the setter as immediately mutating that snapshot. Teach functional updates using a concrete queued-update example. Use stable item IDs when reordering, and distinguish intentional resets from accidental resets caused by unstable keys.
 
 Forms and controlled inputs, `useReducer`, and loading/error states can become a later chapter. Do not replace the agreed nine topics with these extensions.
+
+## Second course: effects with `useEffect`
+
+The user asked for a chapter on `useEffect` built the same way as the React state chapter, plus a home page that displays both courses. The state course and its nine topics are unchanged; the effects course is a separate course with its own map, handbook, and progress.
+
+The user asked that examples and exercises follow the most practical use cases, ordered from most to least popular, starting with "the most common use case for useeffect is making a fetch http request when loading a component". Lessons and handbook patterns follow that order:
+
+| Lesson | Topic | Practical feature and learning objective |
+| --- | --- | --- |
+| 1 | Fetch data when a component loads | Team directory: the starter calls `fetch('/api/team')` in the render body, so requests repeat forever (visible in a network log). Move it into `useEffect` with `[]`; show loading until the response arrives. |
+| 2 | Refetch when a value changes | Profile viewer: `fetch(`/api/profiles/${personId}`)` with `[]` never reloads. Add `personId` to the dependencies, then ignore a slow, stale response with a cleanup flag (an `AbortController` also passes). |
+| 3 | Subscribe to browser events | Team chat: follow the window width for a compact member list, with one `resize` listener removed on unmount. |
+| 4 | Run timers and clean them up | Focus timer: make Pause stop the interval, keep a single interval after restarting, and stop it when the timer closes. |
+| 5 | Connect to an external system | Team chat: connect to the selected room, keep one connection, and disconnect on leave, shown in a supplied server log. |
+| 6 | Work with the DOM after render | Team chat: focus the display-name field when Edit opens it. The starter focuses during render and crashes; move it into an effect. |
+| 7 | You might not need an effect | Task board: replace state copied by an effect with a value calculated during render. |
+
+Teaching accuracy: effects run after React updates the screen; the cleanup runs before the effect runs again and on unmount; every reactive value an effect reads belongs in its dependencies; values derived from props and state need no effect.
+
+Navigation: `/` is the home page listing both courses with progress. `/course/state` and `/course/effects` are the course maps. Lesson links stay `/lesson/$id`, with ids unique across courses (1–9 state, 10–16 effects) so existing links, drafts, and progress remain valid; learners see per-course numbers. `/handbook` is the state handbook and `/handbook/effects` the effects handbook, which uses the same short visual format: an effect timeline, `useEffect` anatomy with the three dependency-array forms, and three expandable patterns (cleanup, ignoring stale responses, calculating during render). The effects handbook's anatomy example is a fetch keyed by `userId` with an ignore-flag cleanup, and its patterns run most common first: loading data with loading and error states, cleaning up listeners/timers/connections, and calculating during render. The effects course is unlocked from the start; the home page recommends finishing the state course first.
+
+Effects runtime choices: the frame's `react` module wraps `useEffect` to count runs, cleanups (only of returned cleanup functions), and latest dependencies for the inspector and checks, while passing the learner's own dependency array to React. Checks install a fake clock (timers and `Date.now`), track `window` listeners, and can simulate a resize, so timer, subscription, and race-condition behaviour is tested quickly and deterministically. Because the sandbox makes no network requests, the frame's `fetch` is replaced by a supplied pretend server (`./network.js`) that answers `/api/team` and `/api/profiles/:id` with JSON after timer-based delays (Ada deliberately slow), supports `AbortController`, and exports a visible `NetworkLog`. A pretend chat server (`./chat.js`, with a visible connection log) is also supplied. Supplied modules are read-only and listed in the Files tab.
 
 ## Lesson experience
 
@@ -175,7 +197,7 @@ Before considering the full game complete, apply equivalent acceptance checks to
 
 ## Agreed handbook
 
-Merge Lesson 0 and the handbook into one page titled Handbook at /handbook. Remove Lesson 0 from visible navigation; redirect legacy /introduction links to the handbook. Preserve all nine exercises, completion totals, drafts, and prerequisites.
+Merge Lesson 0 and the handbook into one page titled Handbook at /handbook (the state course's handbook; the effects course has its own at /handbook/effects). Remove Lesson 0 from visible navigation; redirect legacy /introduction links to the handbook. Preserve all nine exercises, completion totals, drafts, and prerequisites.
 
 Keep the merged resource short and visual: a compact state-memory diagram, a visual `useState` anatomy, and three expandable code patterns ordered by common beginner mistakes. Do not repeat the first lesson with a live example, click-to-screen walkthrough, or prediction check; the lessons provide that applied interaction. The three reference patterns are immutable object and array updates, functional updates when the next state depends on the previous state, and updating parent-owned state from a child through a callback prop. Teach derived state and component identity when their exercises introduce the problems in context. Exercise screens are outside this visual refresh.
 

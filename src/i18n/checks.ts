@@ -1,4 +1,5 @@
 import type { Locale } from '../state/stores'
+import { effectsCheckAr, effectsCheckFr } from './effectsLessons'
 
 const fr: Record<string, string> = {
   '1:toggles-state': 'Le clic ne change pas correctement isDark. Appelez setIsDark dans handleToggle avec l’inverse de la valeur actuelle.',
@@ -60,5 +61,6 @@ const ar: Record<string, string> = {
 
 export function localizeCheckMessage(locale: Locale, lessonId: number, objectiveId: string, english: string | null): string | null {
   if (!english || locale === 'en') return english
-  return (locale === 'fr' ? fr : ar)[`${lessonId}:${objectiveId}`] ?? english
+  const key = `${lessonId}:${objectiveId}`
+  return (locale === 'fr' ? fr[key] ?? effectsCheckFr[key] : ar[key] ?? effectsCheckAr[key]) ?? english
 }

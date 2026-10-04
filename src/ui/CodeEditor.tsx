@@ -1,10 +1,10 @@
 import { defaultKeymap, history, historyKeymap, indentWithTab, temporarilySetTabFocusMode } from '@codemirror/commands'
 import { javascript } from '@codemirror/lang-javascript'
-import { HighlightStyle, bracketMatching, indentOnInput, syntaxHighlighting } from '@codemirror/language'
+import { bracketMatching, indentOnInput, syntaxHighlighting } from '@codemirror/language'
 import { Annotation, EditorState, StateEffect, StateField, type Extension } from '@codemirror/state'
 import { Decoration, EditorView, drawSelection, highlightActiveLine, keymap, lineNumbers, type DecorationSet } from '@codemirror/view'
-import { tags } from '@lezer/highlight'
 import { useEffect, useRef } from 'react'
+import { codeHighlighter } from './codeHighlight'
 
 export type LineMark = { line: number; kind: 'edit' | 'related' | 'error' }
 
@@ -47,19 +47,6 @@ const theme = EditorView.theme(
   { dark: true },
 )
 
-const highlight = HighlightStyle.define([
-  { tag: [tags.keyword, tags.controlKeyword, tags.moduleKeyword], color: '#f28fb5' },
-  { tag: [tags.string, tags.special(tags.string)], color: '#98e0a8' },
-  { tag: [tags.number, tags.bool, tags.null], color: '#ffc27a' },
-  { tag: [tags.function(tags.variableName), tags.function(tags.propertyName)], color: '#f5d77e' },
-  { tag: [tags.definition(tags.variableName)], color: '#8fd0ff' },
-  { tag: [tags.tagName, tags.angleBracket], color: '#f28f9b' },
-  { tag: tags.attributeName, color: '#ffcf85' },
-  { tag: [tags.propertyName], color: '#8fd0ff' },
-  { tag: [tags.comment, tags.lineComment], color: '#7d8fae', fontStyle: 'italic' },
-  { tag: [tags.operator, tags.punctuation, tags.bracket], color: '#b9c7de' },
-])
-
 type Props = {
   value: string
   onChange: (value: string) => void
@@ -85,7 +72,7 @@ export function CodeEditor({ value, onChange, marks, label, onRun }: Props) {
       indentOnInput(),
       bracketMatching(),
       javascript({ jsx: true }),
-      syntaxHighlighting(highlight),
+      syntaxHighlighting(codeHighlighter),
       theme,
       markField,
       EditorView.contentAttributes.of({ 'aria-label': label, 'aria-describedby': 'editor-help' }),

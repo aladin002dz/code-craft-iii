@@ -1,4 +1,4 @@
-# State Quest implementation status
+# Code Craft implementation status
 
 Read `AGENTS.md` and `PROJECT_BRIEF.md` before changing the app. The original foundation was committed as `a29655f` on `main`; the work described below is currently in the working tree.
 

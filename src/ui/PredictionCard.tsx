@@ -1,6 +1,7 @@
 import { useId, useState } from 'react'
 import type { Prediction } from '../lessons/types'
 import { useI18n } from '../i18n/I18nProvider'
+import { Code } from './codeHighlight'
 
 /** A short "what will happen?" question. It never blocks the lesson; it exposes a misconception first. */
 export function PredictionCard({ prediction }: { prediction: Prediction }) {
@@ -14,7 +15,7 @@ export function PredictionCard({ prediction }: { prediction: Prediction }) {
     <section className="prediction" aria-label={copy.prediction.label}>
       <div className="eyebrow">{copy.prediction.heading}</div>
       <p className="prediction-question">{prediction.question}</p>
-      {prediction.code && <pre className="prediction-code">{prediction.code}</pre>}
+      {prediction.code && <pre className="prediction-code" dir="ltr"><Code>{prediction.code}</Code></pre>}
       <div className="prediction-options" role="radiogroup" aria-label={copy.prediction.options}>
         {prediction.options.map((option, index) => (
           <label

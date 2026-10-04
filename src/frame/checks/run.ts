@@ -1,6 +1,7 @@
 import type { CheckOutcome } from '../protocol'
 import type { Mounted } from '../runtime'
 import { CheckFailure, createCheckContext, type CheckContext } from './context'
+import { installEnvironment } from './environment'
 
 export type CheckDef = {
   /** Matches an objective id in the lesson definition. */
@@ -16,8 +17,10 @@ export async function runChecks(defs: CheckDef[], mounted: Mounted, container: H
   const results: CheckOutcome[] = []
   for (const def of defs) {
     runtimeErrors.length = 0
+    // Installed before mounting, so timers and listeners the component sets up on mount are seen.
+    const environment = installEnvironment(error => runtimeErrors.push(error instanceof Error ? error.message : String(error)))
     mounted.remount()
-    const ctx = createCheckContext(container, () => runtimeErrors[0] ?? null)
+    const ctx = createCheckContext(container, () => runtimeErrors[0] ?? null, environment)
     await ctx.settle().catch(() => undefined)
     try {
       await def.run(ctx)
@@ -35,6 +38,10 @@ export async function runChecks(defs: CheckDef[], mounted: Mounted, container: H
         message += ' This usually means state was changed in place. Make a new object or array before calling the setter.'
       }
       results.push({ id: def.id, passed: false, message })
+    } finally {
+      // Unmount inside the fake environment so cleanups clear fake timers, then hand back the real window.
+      mounted.unmount()
+      environment.restore()
     }
   }
   return results

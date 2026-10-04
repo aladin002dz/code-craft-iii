@@ -24,7 +24,9 @@ export function stateNamesByComponent(code: string): Map<string, string[]> {
 }
 
 export type InspectorRow = { id: string; name: string; value: JsonValue }
-export type InspectorGroup = { id: string; component: string; instance: string | null; rows: InspectorRow[] }
+/** One useEffect call: how often it set up and cleaned up, and the dependencies of its latest run. */
+export type InspectorEffect = { id: string; index: number; runs: number; cleanups: number; deps: JsonValue[] | null }
+export type InspectorGroup = { id: string; component: string; instance: string | null; rows: InspectorRow[]; effects: InspectorEffect[] }
 
 export function buildInspector(snapshot: StateSnapshot, code: string): InspectorGroup[] {
   const names = stateNamesByComponent(code)
@@ -43,6 +45,7 @@ export function buildInspector(snapshot: StateSnapshot, code: string): Inspector
         name: labels[index] ?? `state ${index + 1}`,
         value,
       })),
+      effects: (entry.effects ?? []).map((effect, index) => ({ id: `${id}/effect-${index}`, index: index + 1, ...effect })),
     }
   })
 }

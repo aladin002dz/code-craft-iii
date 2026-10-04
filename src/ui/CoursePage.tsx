@@ -1,36 +1,59 @@
-import { Link } from '@tanstack/react-router'
-import { useMemo, useState } from 'react'
-import { lessons } from '../lessons'
-import { isUnlocked, progressStore, resetEverything, useStore } from '../state/stores'
+import { Link, useParams } from '@tanstack/react-router'
+import { useMemo } from 'react'
+import { courseLessons, isCourseId, lessonNumber, lessons } from '../lessons'
+import { isUnlocked, progressStore, useStore } from '../state/stores'
 import { BookIcon } from './BookIcon'
 import { useI18n } from '../i18n/I18nProvider'
 import { localizeLessons } from '../i18n/lessons'
+import type { CourseId } from '../lessons/types'
+
+export const handbookPath = (course: CourseId) => (course === 'effects' ? '/handbook/effects' : '/handbook')
 
 export function CoursePage() {
+  const { courseId } = useParams({ from: '/course/$courseId' })
+  const { copy } = useI18n()
+  if (!isCourseId(courseId)) {
+    return (
+      <div className="notice">
+        <h1>{copy.lesson.notFound}</h1>
+        <Link className="btn primary" to="/">
+          {copy.lesson.back}
+        </Link>
+      </div>
+    )
+  }
+  return <CourseMap course={courseId} />
+}
+
+function CourseMap({ course }: { course: CourseId }) {
   const { locale, copy } = useI18n()
-  const localizedLessons = useMemo(() => localizeLessons(lessons, locale), [locale])
+  const localizedLessons = useMemo(() => courseLessons(localizeLessons(lessons, locale), course), [locale, course])
   const completed = useStore(progressStore).completed
-  const [confirming, setConfirming] = useState(false)
   const nextLesson = localizedLessons.find(lesson => !completed.includes(lesson.id) && isUnlocked(lesson.prerequisite, completed))
-  const finished = completed.length === localizedLessons.length
+  const doneHere = localizedLessons.filter(lesson => completed.includes(lesson.id)).length
+  const finished = doneHere === localizedLessons.length
+  const text = copy.courses[course]
 
   return (
-    <div className="course">
+    <div className="course" data-course={course}>
       <section className="course-intro">
-        <div className="eyebrow">{copy.course.eyebrow}</div>
-        <h1>{copy.course.title}</h1>
-        <p>{copy.course.description}</p>
+        <Link className="back-link" to="/">
+          <span aria-hidden="true">{locale === 'ar' ? '→' : '←'}</span> {copy.course.allCourses}
+        </Link>
+        <div className="eyebrow">{text.eyebrow}</div>
+        <h1>{text.title}</h1>
+        <p>{text.description}</p>
         <div className="intro-actions">
-          <Link className="btn" to="/handbook"><BookIcon /> {copy.header.handbook}</Link>
+          <Link className="btn" to={handbookPath(course)}><BookIcon /> {copy.header.handbook}</Link>
         </div>
         {finished ? (
           <p className="course-done" role="status">
-            {copy.course.allComplete}
+            {text.allComplete}
           </p>
         ) : (
           nextLesson && (
             <Link className="btn primary" to="/lesson/$lessonId" params={{ lessonId: String(nextLesson.id) }} data-testid="continue">
-              {completed.length === 0 ? copy.course.start : copy.course.continue(nextLesson.id)} <span aria-hidden="true">{locale === 'ar' ? '←' : '→'}</span>
+              {doneHere === 0 ? copy.course.start : copy.course.continue(lessonNumber(nextLesson.id))} <span aria-hidden="true">{locale === 'ar' ? '←' : '→'}</span>
             </Link>
           )
         )}
@@ -40,10 +63,11 @@ export function CoursePage() {
         {localizedLessons.map(lesson => {
           const done = completed.includes(lesson.id)
           const open = isUnlocked(lesson.prerequisite, completed)
+          const number = lessonNumber(lesson.id)
           const body = (
             <>
               <span className={`lesson-number${done ? ' done' : ''}`} aria-hidden="true">
-                {done ? '✓' : lesson.id}
+                {done ? '✓' : number}
               </span>
               <span className="lesson-text">
                 <span className="lesson-topic">{lesson.topic}</span>
@@ -62,37 +86,13 @@ export function CoursePage() {
               ) : (
                 <div className="lesson-card locked" aria-disabled="true">
                   {body}
-                  <span className="sr-only"> {copy.course.unlock(lesson.prerequisite!)}</span>
+                  <span className="sr-only"> {copy.course.unlock(lessonNumber(lesson.prerequisite!))}</span>
                 </div>
               )}
             </li>
           )
         })}
       </ol>
-
-      <div className="course-footer">
-        {confirming ? (
-          <span className="confirm-reset" role="alertdialog" aria-label={copy.course.resetQuestion}>
-            {copy.course.resetQuestion}
-            <button
-              className="btn danger"
-              onClick={() => {
-                resetEverything()
-                setConfirming(false)
-              }}
-            >
-              {copy.course.erase}
-            </button>
-            <button className="btn" onClick={() => setConfirming(false)}>
-              {copy.course.cancel}
-            </button>
-          </span>
-        ) : (
-          <button className="link-button" onClick={() => setConfirming(true)}>
-            {copy.course.resetAll}
-          </button>
-        )}
-      </div>
     </div>
   )
 }

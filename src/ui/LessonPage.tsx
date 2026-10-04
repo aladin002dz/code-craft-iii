@@ -1,5 +1,5 @@
 import { Link, useParams } from '@tanstack/react-router'
-import { getLesson, lessons } from '../lessons'
+import { getLesson, lessonNumber, nextInCourse } from '../lessons'
 import { isUnlocked, progressStore, useStore } from '../state/stores'
 import { Workspace } from './Workspace'
 import { useI18n } from '../i18n/I18nProvider'
@@ -17,7 +17,7 @@ export function LessonPage() {
     return (
       <div className="notice">
         <h1>{copy.lesson.notFound}</h1>
-        <p>{copy.lesson.notFoundBody(lessonId, lessons.length)}</p>
+        <p>{copy.lesson.notFoundBody(lessonId)}</p>
         <Link className="btn primary" to="/">
           {copy.lesson.back}
         </Link>
@@ -30,16 +30,16 @@ export function LessonPage() {
     const before = beforeBase ? localizeLesson(beforeBase, locale) : undefined
     return (
       <div className="notice" data-testid="locked">
-        <h1>{copy.lesson.lockedTitle(lesson.id)}</h1>
-        <p>{copy.lesson.lockedBody(before?.id ?? lesson.prerequisite!, before?.title ?? '', lesson.title)}</p>
+        <h1>{copy.lesson.lockedTitle(lessonNumber(lesson.id))}</h1>
+        <p>{copy.lesson.lockedBody(lessonNumber(lesson.prerequisite!), before?.title ?? '', lesson.title)}</p>
         <Link className="btn primary" to="/lesson/$lessonId" params={{ lessonId: String(lesson.prerequisite) }}>
-          {copy.lesson.goTo(lesson.prerequisite!)}
+          {copy.lesson.goTo(lessonNumber(lesson.prerequisite!))}
         </Link>
       </div>
     )
   }
 
   // Keyed so switching lessons never carries editor, preview, or check state across.
-  const nextBase = getLesson(lesson.id + 1)
+  const nextBase = nextInCourse(lesson)
   return <Workspace key={lesson.id} lesson={lesson} next={nextBase ? localizeLesson(nextBase, locale) : null} />
 }

@@ -3,6 +3,7 @@ import type { Lesson } from './types'
 
 export const lesson1: Lesson = {
   id: 1,
+  course: 'state',
   topic: 'State changes the screen',
   title: 'Make the theme toggle work',
   project: 'Settings panel',
